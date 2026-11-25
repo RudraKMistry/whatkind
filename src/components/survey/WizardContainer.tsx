@@ -61,8 +61,8 @@ export function WizardContainer({
   useEffect(() => {
     setProfile(loadStoredProfile());
     const handleProfileUpdate = (e: Event) => {
-      const custom = e as CustomEvent<UserProfile>;
-      setProfile(custom.detail || loadStoredProfile());
+      const custom = e as CustomEvent<UserProfile | null>;
+      setProfile(custom.detail === null ? null : custom.detail || loadStoredProfile());
     };
     window.addEventListener("survey-profile-updated", handleProfileUpdate);
     return () => window.removeEventListener("survey-profile-updated", handleProfileUpdate);

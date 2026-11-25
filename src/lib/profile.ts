@@ -42,11 +42,13 @@ export function isProfileComplete(profile: Partial<UserProfile> | null | undefin
   );
 }
 
-/** Load saved profile from browser localStorage (safe for SSR). */
+/** Load saved profile from localStorage or sessionStorage (safe for SSR). */
 export function loadStoredProfile(): UserProfile | null {
   if (typeof window === "undefined") return null;
   try {
-    const raw = window.localStorage.getItem(PROFILE_STORAGE_KEY);
+    const raw =
+      window.localStorage.getItem(PROFILE_STORAGE_KEY) ||
+      window.sessionStorage.getItem(PROFILE_STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     if (parsed && typeof parsed === "object") {
@@ -65,13 +67,62 @@ export function loadStoredProfile(): UserProfile | null {
   return null;
 }
 
-/** Persist profile to browser localStorage and notify listeners in the same tab. */
-export function saveStoredProfile(profile: UserProfile): void {
+/** Check if the user chose "Stay signed in" (persisted in localStorage). */
+export function isStayingSignedIn(): boolean {
+  if (typeof window === "undefined") return true;
+  try {
+    if (window.sessionStorage.getItem(PROFILE_STORAGE_KEY)) return false;
+    return true;
+  } catch {
+    return true;
+  }
+}
+
+/** Persist profile (localStorage if staySignedIn, otherwise sessionStorage) and notify listeners. */
+export function saveStoredProfile(profile: UserProfile, staySignedIn = true): void {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile));
+    const serialized = JSON.stringify(profile);
+    if (staySignedIn) {
+      window.localStorage.setItem(PROFILE_STORAGE_KEY, serialized);
+      window.sessionStorage.removeItem(PROFILE_STORAGE_KEY);
+    } else {
+      window.sessionStorage.setItem(PROFILE_STORAGE_KEY, serialized);
+      window.localStorage.removeItem(PROFILE_STORAGE_KEY);
+    }
     window.dispatchEvent(new CustomEvent("survey-profile-updated", { detail: profile }));
   } catch {
     // Ignore storage quota errors
+  }
+}
+
+/** Log out the current respondent profile and clear cached quiz results/drafts on this device. */
+export function clearStoredProfile(): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(PROFILE_STORAGE_KEY);
+    window.sessionStorage.removeItem(PROFILE_STORAGE_KEY);
+
+    const localKeysToRemove: string[] = [];
+    for (let i = 0; i < window.localStorage.length; i++) {
+      const k = window.localStorage.key(i);
+      if (k && k.startsWith("survey_latest_result_v1_")) {
+        localKeysToRemove.push(k);
+      }
+    }
+    localKeysToRemove.forEach((k) => window.localStorage.removeItem(k));
+
+    const sessionKeysToRemove: string[] = [];
+    for (let i = 0; i < window.sessionStorage.length; i++) {
+      const k = window.sessionStorage.key(i);
+      if (k && k.startsWith("survey_draft_")) {
+        sessionKeysToRemove.push(k);
+      }
+    }
+    sessionKeysToRemove.forEach((k) => window.sessionStorage.removeItem(k));
+
+    window.dispatchEvent(new CustomEvent("survey-profile-updated", { detail: null }));
+  } catch {
+    // Ignore storage errors
   }
 }

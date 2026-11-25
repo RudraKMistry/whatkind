@@ -44,24 +44,39 @@ export function LatestResultButton({ slug }: { slug: string }) {
   const [saved, setSaved] = useState<SavedLatestResult | null>(null);
 
   useEffect(() => {
-    const local = loadLatestResult(slug);
-    if (local) {
-      setSaved(local);
-      return;
-    }
-
-    const profile = loadStoredProfile();
-    if (!profile?.profileToken) return;
-
-    let cancelled = false;
-    fetchLatestFromServer(profile.profileToken).then((map) => {
-      if (!cancelled && map[slug]) {
-        setSaved(map[slug]);
+    const syncLatest = () => {
+      const local = loadLatestResult(slug);
+      if (local) {
+        setSaved(local);
+        return;
       }
-    });
-    return () => {
-      cancelled = true;
+
+      const profile = loadStoredProfile();
+      if (!profile?.profileToken) {
+        setSaved(null);
+        return;
+      }
+
+      fetchLatestFromServer(profile.profileToken).then((map) => {
+        setSaved(map[slug] || null);
+      });
     };
+
+    syncLatest();
+
+    const handleProfileChange = (e: Event) => {
+      const custom = e as CustomEvent<unknown>;
+      if (custom.detail === null) {
+        pendingFetch = null;
+        cachedToken = null;
+        setSaved(null);
+      } else {
+        syncLatest();
+      }
+    };
+
+    window.addEventListener("survey-profile-updated", handleProfileChange);
+    return () => window.removeEventListener("survey-profile-updated", handleProfileChange);
   }, [slug]);
 
   if (!saved) return null;

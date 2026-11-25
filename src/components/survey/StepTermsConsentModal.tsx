@@ -194,7 +194,7 @@ export function StepTermsConsentModal({
                 <span className="font-medium text-primary underline underline-offset-2">
                   Terms & Privacy Rules
                 </span>
-                . I freely choose to share my answers and let you save and score them.
+                .
               </span>
             </label>
 

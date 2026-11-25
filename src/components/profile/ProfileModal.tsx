@@ -1,19 +1,23 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { User, X, CheckCircle2, AlertCircle, Loader2, ShieldCheck } from "lucide-react";
+import { User, X, CheckCircle2, AlertCircle, Loader2, ShieldCheck, LogOut } from "lucide-react";
 import {
   UserProfile,
   GENDER_OPTIONS,
   generateProfileToken,
+  isProfileComplete,
+  isStayingSignedIn,
   loadStoredProfile,
   saveStoredProfile,
+  clearStoredProfile,
 } from "@/lib/profile";
 
 interface ProfileFormProps {
   initialProfile?: UserProfile | null;
   onSaved: (profile: UserProfile) => void;
   onCancel?: () => void;
+  onLoggedOut?: () => void;
   submitLabel?: string;
 }
 
@@ -21,6 +25,7 @@ export function ProfileForm({
   initialProfile,
   onSaved,
   onCancel,
+  onLoggedOut,
   submitLabel = "Save Profile",
 }: ProfileFormProps) {
   const [fullName, setFullName] = useState(initialProfile?.fullName || "");
@@ -28,6 +33,7 @@ export function ProfileForm({
   const [birthDate, setBirthDate] = useState(initialProfile?.birthDate || "");
   const [gender, setGender] = useState(initialProfile?.gender || "");
   const [notes, setNotes] = useState(initialProfile?.notes || "");
+  const [staySignedIn, setStaySignedIn] = useState<boolean>(() => isStayingSignedIn());
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -38,6 +44,7 @@ export function ProfileForm({
       setBirthDate(initialProfile.birthDate || "");
       setGender(initialProfile.gender || "");
       setNotes(initialProfile.notes || "");
+      setStaySignedIn(isStayingSignedIn());
     }
   }, [initialProfile]);
 
@@ -89,7 +96,7 @@ export function ProfileForm({
         throw new Error(data.error || "Could not save your profile.");
       }
 
-      saveStoredProfile(nextProfile);
+      saveStoredProfile(nextProfile, staySignedIn);
       onSaved(nextProfile);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Could not save your profile.";
@@ -190,6 +197,18 @@ export function ProfileForm({
         </div>
       )}
 
+      <label className="flex items-center gap-2.5 cursor-pointer select-none text-xs text-charcoal-800 pt-1">
+        <input
+          type="checkbox"
+          checked={staySignedIn}
+          onChange={(e) => setStaySignedIn(e.target.checked)}
+          className="h-4 w-4 rounded border-border text-primary focus:ring-primary accent-primary cursor-pointer"
+        />
+        <span className="font-medium">
+          Stay signed in on this device (keep my profile saved between visits)
+        </span>
+      </label>
+
       <div className="rounded-lg bg-canvas-subtle border border-border p-3 flex items-start gap-2 text-[11px] text-charcoal-600">
         <ShieldCheck className="h-4 w-4 text-primary shrink-0 mt-0.5" />
         <span>
@@ -197,34 +216,53 @@ export function ProfileForm({
         </span>
       </div>
 
-      <div className="flex items-center justify-end gap-3 pt-2">
-        {onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={isSaving}
-            className="px-4 py-2 rounded-lg border border-border bg-surface hover:bg-canvas-subtle text-xs sm:text-sm font-medium text-charcoal-700"
-          >
-            Cancel
-          </button>
-        )}
-        <button
-          type="submit"
-          disabled={isSaving}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-hover active:bg-primary-active text-white text-xs sm:text-sm font-semibold shadow-warm-md transition-all disabled:opacity-60"
-        >
-          {isSaving ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Saving Profile...</span>
-            </>
-          ) : (
-            <>
-              <CheckCircle2 className="h-4 w-4" />
-              <span>{submitLabel}</span>
-            </>
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+        <div>
+          {isProfileComplete(initialProfile) && (
+            <button
+              type="button"
+              onClick={() => {
+                clearStoredProfile();
+                onLoggedOut?.();
+              }}
+              disabled={isSaving}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-terracotta/30 bg-terracotta-soft hover:bg-terracotta/15 text-terracotta text-xs sm:text-sm font-medium transition-colors"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              <span>Log Out</span>
+            </button>
           )}
-        </button>
+        </div>
+
+        <div className="flex items-center gap-3 ml-auto">
+          {onCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              disabled={isSaving}
+              className="px-4 py-2 rounded-lg border border-border bg-surface hover:bg-canvas-subtle text-xs sm:text-sm font-medium text-charcoal-700"
+            >
+              Cancel
+            </button>
+          )}
+          <button
+            type="submit"
+            disabled={isSaving}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-hover active:bg-primary-active text-white text-xs sm:text-sm font-semibold shadow-warm-md transition-all disabled:opacity-60"
+          >
+            {isSaving ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Saving Profile...</span>
+              </>
+            ) : (
+              <>
+                <CheckCircle2 className="h-4 w-4" />
+                <span>{submitLabel}</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </form>
   );
@@ -277,6 +315,7 @@ export function ProfileModal({ isOpen, onClose, onSaved }: ProfileModalProps) {
         <ProfileForm
           initialProfile={stored}
           onCancel={onClose}
+          onLoggedOut={onClose}
           onSaved={(saved) => {
             onSaved?.(saved);
             onClose();
