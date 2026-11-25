@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vanguard Cognitive IQ Exhibition | UI-Genius Archetypes</title>
+  <!-- Only allowed external styling script per UI-Genius specification -->
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
+    
+    :root {
+      --bg: #FBF9F5;
+      --surface: #FFFFFF;
+      --surface-subtle: #F5F2EB;
+      --border: #E7E3D8;
+      --charcoal: #1C1917;
+      --charcoal-muted: #78716C;
+      --accent: #D97706;
+      --accent-soft: rgba(217, 119, 6, 0.12);
+      --accent-glow: rgba(217, 119, 6, 0.25);
+    }
+
+    body.theme-obsidian {
+      --bg: #0C0A09;
+      --surface: #1C1917;
+      --surface-subtle: #292524;
+      --border: #44403C;
+      --charcoal: #F5F5F4;
+      --charcoal-muted: #A8A29E;
+      --accent: #38BDF8;
+      --accent-soft: rgba(56, 189, 248, 0.15);
+      --accent-glow: rgba(56, 189, 248, 0.35);
+    }
+
+    body.theme-bauhaus {
+      --bg: #F4F1EA;
+      --surface: #FFFFFF;
+      --surface-subtle: #EAE5D9;
+      --border: #D6CEBE;
+      --charcoal: #0F0F0F;
+      --charcoal-muted: #5A5751;
+      --accent: #DC2626;
+      --accent-soft: rgba(220, 38, 38, 0.12);
+      --accent-glow: rgba(220, 38, 38, 0.25);
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--charcoal);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .tactile-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 4px 20px -2px rgba(28, 25, 23, 0.05);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Spring-loaded matrix cell hover */
+    .matrix-cell {
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .matrix-cell:hover:not(.empty-target) {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+      box-shadow: 0 8px 24px -4px var(--accent-glow);
+    }
+
+    .matrix-cell.empty-target {
+      border: 2px dashed var(--accent);
+      background-color: var(--accent-soft);
+    }
+
+    /* Interactive Tile Choice */
+    .option-tile {
+      cursor: pointer;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      background-color: var(--surface);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .option-tile:hover {
+      transform: translateY(-4px) scale(1.02);
+      border-color: var(--accent);
+      box-shadow: 0 12px 28px -6px var(--accent-glow);
+    }
+
+    .option-tile.selected {
+      border-color: var(--accent);
+      background-color: var(--accent-soft);
+      box-shadow: 0 0 0 3px var(--accent-soft), 0 8px 20px -4px var(--accent-glow);
+    }
+
+    /* Smooth pulse animation */
+    @keyframes pulseSoft {
+      0%, 100% { opacity: 0.9; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
+    .pulse-target {
+      animation: pulseSoft 2.5s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen pb-32">
+
+  <!-- Header & Exhibition Navigator -->
+  <header class="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--bg)]/90 backdrop-blur-md px-6 py-4">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="h-2.5 w-2.5 rounded-full bg-[var(--accent)]"></span>
+          <span class="text-xs font-mono font-bold tracking-wider uppercase text-[var(--accent)]">
+            UI-Genius Vanguard Exhibition
+          </span>
+        </div>
+        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-[var(--charcoal)]">
+          Cognitive Assessment & Matrix System Architecture
+        </h1>
+      </div>
+
+      <!-- Theme Switcher Controls -->
+      <div class="flex items-center gap-2 bg-[var(--surface-subtle)] p-1 rounded-xl border border-[var(--border)] text-xs font-mono font-semibold">
+        <button onclick="setTheme('scientific')" id="btn-theme-scientific" class="px-3 py-1.5 rounded-lg bg-[var(--surface)] text-[var(--charcoal)] shadow-sm">
+          Studio Warm
+        </button>
+        <button onclick="setTheme('obsidian')" id="btn-theme-obsidian" class="px-3 py-1.5 rounded-lg text-[var(--charcoal-muted)] hover:text-[var(--charcoal)]">
+          Obsidian Lab
+        </button>
+        <button onclick="setTheme('bauhaus')" id="btn-theme-bauhaus" class="px-3 py-1.5 rounded-lg text-[var(--charcoal-muted)] hover:text-[var(--charcoal)]">
+          Bauhaus Bold
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 space-y-16">
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 1: INTERACTIVE SVG VISUAL RAVEN MATRIX PUZZLE & DOCKING TILES -->
+    <!-- ===================================================================== -->
+    <section class="space-y-6">
+      <div class="border-b border-[var(--border)] pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <span class="font-mono text-xs font-bold text-[var(--accent)] uppercase tracking-wider">
+            Feature 1 • First-Principles Kinetic Mechanics
+          </span>
+          <h2 class="text-2xl font-bold text-[var(--charcoal)]">
+            Interactive Visual Raven 3×3 Matrix & Docking Tiles
+          </h2>
+          <p class="text-sm text-[var(--charcoal-muted)]">
+            Transforms text descriptions into authentic non-verbal Raven matrix geometry with real SVG docking slot physics.
+          </p>
+        </div>
+        <div class="text-xs font-mono text-[var(--charcoal-muted)] bg-[var(--surface-subtle)] border border-[var(--border)] px-3 py-1.5 rounded-lg">
+          Puzzle Item #36 • Tri-Variable Orthogonal Rule
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: 3x3 Matrix Grid -->
+        <div class="lg:col-span-7 tactile-card p-6 sm:p-8 space-y-6">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono uppercase text-[var(--charcoal-muted)] font-semibold tracking-wider">
+              Pattern Invariance Matrix (Row & Column Simultaneous Constraints)
+            </span>
+            <span class="text-xs font-mono text-[var(--accent)] font-bold">
+              3 × 3 Grid
+            </span>
+          </div>
+
+          <!-- 3x3 SVG Raven Matrix -->
+          <div class="grid grid-cols-3 gap-3 sm:gap-4 max-w-md mx-auto aspect-square">
+            <!-- Row 1 -->
+            <div class="matrix-cell p-3">
+              <!-- Cell 1: Circle with no line, 3 dots -->
+              <svg viewBox="0 0 100 100" class="w-full h-full">
+                <circle cx="50" cy="50" r="38" fill="none" stroke="currentColor" stroke-width="4" />
+                <circle cx="35" cy="50" r="4.5" fill="var(--accent)" />
+                <circle cx="50" cy="50" r="4.5" fill="var(--accent)" />
+                <circle cx="65" cy="50" r="4.5" fill="var(--accent)" />
+              </svg>
+            </div>
+            <div class="matrix-cell p-3">
+              <!-- Cell 2: Triangle with single line, 2 dots -->
+              <svg viewBox="0 0 100 100" class="w-full h-full">
+                <polygon points="50,14 86,84 14,84" fill="none" stroke="currentColor" stroke-width="4" />
+                <line x1="50" y1="14" x2="50" y2="84" stroke="currentColor" stroke-width="3" />
+                <circle cx="40" cy="62" r="4.5" fill="var(--accent)" />
+                <circle cx="60" cy="62" r="4.5" fill="var(--accent)" />
+              </svg>
+            </div>
+            <div class="matrix-cell p-3">
+              <!-- Cell 3: Pentagon with cross lines, 1 dot -->
+              <svg viewBox="0 0 100 100" class="w-full h-full">
+                <polygon points="50,14 86,40 72,84 28,84 14,40" fill="none" stroke="currentColor" stroke-width="4" />
+                <line x1="50" y1="14" x2="50" y2="84" stroke="currentColor" stroke-width="3" />
+                <line x1="20" y1="52" x2="80" y2="52" stroke="currentColor" stroke-width="3" />
+                <circle cx="50" cy="68" r="5" fill="var(--accent)" />
+              </svg>
+            </div>
+
+            <!-- Row 2 -->
+            <div class="matrix-cell p-3">
+              <!-- Cell 4: Square with single line, 2 dots -->
+              <svg viewBox="0 0 100 100" class="w-full h-full">
+                <rect x="18" y="18" width="64" height="64" fill="none" stroke="currentColor" stroke-width="4" />
+                <line x1="18" y1="50" x2="82" y2="50" stroke="currentColor" stroke-width="3" />
+                <circle cx="50" cy="35" r="4.5" fill="var(--accent)" />
+                <circle cx="50" cy="65" r="4.5" fill="var(--accent)" />
+              </svg>
+            </div>
+            <div class="matrix-cell p-3">
+              <!-- Cell 5: Pentagon with cross lines, 1 dot -->
+              <svg viewBox="0 0 100 100" class="w-full h-full">
+                <polygon points="50,14 86,40 72,84 28,84 14,40" fill="none" stroke="currentColor" stroke-width="4" />
+                <line x1="50" y1="14" x2="50" y2="84" stroke="currentColor" stroke-width="3" />
+                <line x1="20" y1="52" x2="80" y2="52" stroke="currentColor" stroke-width="3" />
+                <circle cx="50" cy="68" r="5" fill="var(--accent)" />
+              </svg>
+            </div>
+            <div class="matrix-cell p-3">
+              <!-- Cell 6: Hexagon with no line, 3 dots -->
+              <svg viewBox="0 0 100 100" class="w-full h-full">
+                <polygon points="50,12 85,32 85,68 50,88 15,68 15,32" fill="none" stroke="currentColor" stroke-width="4" />
+                <circle cx="35" cy="50" r="4.5" fill="var(--accent)" />
+                <circle cx="50" cy="50" r="4.5" fill="var(--accent)" />
+                <circle cx="65" cy="50" r="4.5" fill="var(--accent)" />
+              </svg>
+            </div>
+
+            <!-- Row 3 -->
+            <div class="matrix-cell p-3">
+              <!-- Cell 7: Triangle with cross lines, 1 dot -->
+              <svg viewBox="0 0 100 100" class="w-full h-full">
+                <polygon points="50,14 86,84 14,84" fill="none" stroke="currentColor" stroke-width="4" />
+                <line x1="50" y1="14" x2="50" y2="84" stroke="currentColor" stroke-width="3" />
+                <line x1="26" y1="60" x2="74" y2="60" stroke="currentColor" stroke-width="3" />
+                <circle cx="50" cy="74" r="5" fill="var(--accent)" />
+              </svg>
+            </div>
+            <div class="matrix-cell p-3">
+              <!-- Cell 8: Square with no line, 3 dots -->
+              <svg viewBox="0 0 100 100" class="w-full h-full">
+                <rect x="18" y="18" width="64" height="64" fill="none" stroke="currentColor" stroke-width="4" />
+                <circle cx="35" cy="50" r="4.5" fill="var(--accent)" />
+                <circle cx="50" cy="50" r="4.5" fill="var(--accent)" />
+                <circle cx="65" cy="50" r="4.5" fill="var(--accent)" />
+              </svg>
+            </div>
+            <!-- Cell 9: TARGET SLOT (INTERACTIVE DOCKING DESTINATION) -->
+            <div id="matrix-target-cell" class="matrix-cell empty-target p-3 pulse-target">
+              <div id="target-placeholder" class="text-center font-mono font-bold text-2xl text-[var(--accent)]">
+                ?
+              </div>
+              <div id="target-docked" class="hidden w-full h-full flex items-center justify-center"></div>
+            </div>
+          </div>
+
+          <div class="text-xs text-[var(--charcoal-muted)] font-mono flex items-center justify-between border-t border-[var(--border)] pt-4">
+            <span>Rule Axis: Top-Left to Bottom-Right</span>
+            <span class="text-[var(--accent)]">Hover or click a tile to preview slot fit</span>
+          </div>
+        </div>
+
+        <!-- Right: Visual Option Tiles Bank -->
+        <div class="lg:col-span-5 tactile-card p-6 sm:p-8 space-y-5">
+          <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
+            <h3 class="font-bold text-base text-[var(--charcoal)]">
+              Candidate Solution Tiles
+            </h3>
+            <span class="text-xs font-mono text-[var(--accent)] font-semibold">
+              Select 1 of 4
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 sm:gap-4">
+            <!-- Option A (Correct: Pentagon with cross lines and 1 core dot) -->
+            <button
+              type="button"
+              id="opt-a"
+              onclick="selectTile('a')"
+              onmouseenter="previewTile('a')"
+              onmouseleave="clearPreview()"
+              class="option-tile p-4 flex flex-col items-center justify-between gap-3 text-left"
+            >
+              <div class="w-full flex items-center justify-between">
+                <span class="h-6 w-6 rounded-md font-mono text-xs font-bold bg-[var(--surface-subtle)] border border-[var(--border)] flex items-center justify-center">
+                  A
+                </span>
+                <span class="text-[10px] font-mono text-[var(--accent)] font-semibold uppercase">Tile A</span>
+              </div>
+              <div class="w-20 h-20">
+                <svg viewBox="0 0 100 100" class="w-full h-full">
+                  <polygon points="50,14 86,40 72,84 28,84 14,40" fill="none" stroke="currentColor" stroke-width="4" />
+                  <line x1="50" y1="14" x2="50" y2="84" stroke="currentColor" stroke-width="3" />
+                  <line x1="20" y1="52" x2="80" y2="52" stroke="currentColor" stroke-width="3" />
+                  <circle cx="50" cy="68" r="5" fill="var(--accent)" />
+                </svg>
+              </div>
+              <span class="text-[11px] font-mono text-center text-[var(--charcoal-muted)]">Pentagon • Cross • 1 Dot</span>
+            </button>
+
+            <!-- Option B -->
+            <button
+              type="button"
+              id="opt-b"
+              onclick="selectTile('b')"
+              onmouseenter="previewTile('b')"
+              onmouseleave="clearPreview()"
+              class="option-tile p-4 flex flex-col items-center justify-between gap-3 text-left"
+            >
+              <div class="w-full flex items-center justify-between">
+                <span class="h-6 w-6 rounded-md font-mono text-xs font-bold bg-[var(--surface-subtle)] border border-[var(--border)] flex items-center justify-center">
+                  B
+                </span>
+                <span class="text-[10px] font-mono text-[var(--charcoal-muted)] font-semibold uppercase">Tile B</span>
+              </div>
+              <div class="w-20 h-20">
+                <svg viewBox="0 0 100 100" class="w-full h-full">
+                  <rect x="18" y="18" width="64" height="64" fill="none" stroke="currentColor" stroke-width="4" />
+                  <line x1="18" y1="50" x2="82" y2="50" stroke="currentColor" stroke-width="3" />
+                  <circle cx="50" cy="35" r="4.5" fill="var(--accent)" />
+                  <circle cx="50" cy="65" r="4.5" fill="var(--accent)" />
+                </svg>
+              </div>
+              <span class="text-[11px] font-mono text-center text-[var(--charcoal-muted)]">Square • Single • 2 Dots</span>
+            </button>
+
+            <!-- Option C -->
+            <button
+              type="button"
+              id="opt-c"
+              onclick="selectTile('c')"
+              onmouseenter="previewTile('c')"
+              onmouseleave="clearPreview()"
+              class="option-tile p-4 flex flex-col items-center justify-between gap-3 text-left"
+            >
+              <div class="w-full flex items-center justify-between">
+                <span class="h-6 w-6 rounded-md font-mono text-xs font-bold bg-[var(--surface-subtle)] border border-[var(--border)] flex items-center justify-center">
+                  C
+                </span>
+                <span class="text-[10px] font-mono text-[var(--charcoal-muted)] font-semibold uppercase">Tile C</span>
+              </div>
+              <div class="w-20 h-20">
+                <svg viewBox="0 0 100 100" class="w-full h-full">
+                  <polygon points="50,12 85,32 85,68 50,88 15,68 15,32" fill="none" stroke="currentColor" stroke-width="4" />
+                  <circle cx="35" cy="50" r="4.5" fill="var(--accent)" />
+                  <circle cx="50" cy="50" r="4.5" fill="var(--accent)" />
+                  <circle cx="65" cy="50" r="4.5" fill="var(--accent)" />
+                </svg>
+              </div>
+              <span class="text-[11px] font-mono text-center text-[var(--charcoal-muted)]">Hexagon • None • 3 Dots</span>
+            </button>
+
+            <!-- Option D -->
+            <button
+              type="button"
+              id="opt-d"
+              onclick="selectTile('d')"
+              onmouseenter="previewTile('d')"
+              onmouseleave="clearPreview()"
+              class="option-tile p-4 flex flex-col items-center justify-between gap-3 text-left"
+            >
+              <div class="w-full flex items-center justify-between">
+                <span class="h-6 w-6 rounded-md font-mono text-xs font-bold bg-[var(--surface-subtle)] border border-[var(--border)] flex items-center justify-center">
+                  D
+                </span>
+                <span class="text-[10px] font-mono text-[var(--charcoal-muted)] font-semibold uppercase">Tile D</span>
+              </div>
+              <div class="w-20 h-20">
+                <svg viewBox="0 0 100 100" class="w-full h-full">
+                  <polygon points="50,14 86,84 14,84" fill="none" stroke="currentColor" stroke-width="4" />
+                  <line x1="50" y1="14" x2="50" y2="84" stroke="currentColor" stroke-width="3" />
+                  <line x1="26" y1="60" x2="74" y2="60" stroke="currentColor" stroke-width="3" />
+                  <circle cx="40" cy="74" r="4.5" fill="var(--accent)" />
+                  <circle cx="60" cy="74" r="4.5" fill="var(--accent)" />
+                </svg>
+              </div>
+              <span class="text-[11px] font-mono text-center text-[var(--charcoal-muted)]">Triangle • Cross • 2 Dots</span>
+            </button>
+          </div>
+
+          <!-- Dynamic Verification Callout -->
+          <div id="selection-status" class="p-4 rounded-xl bg-[var(--surface-subtle)] border border-[var(--border)] text-xs font-mono">
+            <span class="text-[var(--charcoal-muted)]">Status: </span>
+            <span id="status-text" class="text-[var(--charcoal)] font-semibold">No tile docked yet. Click any tile above to lock your choice.</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 2: 4-AXIS COGNITIVE SPIDER RADAR & VISUAL SOLUTIONS AUTOPSY   -->
+    <!-- ===================================================================== -->
+    <section class="space-y-6">
+      <div class="border-b border-[var(--border)] pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <span class="font-mono text-xs font-bold text-[var(--accent)] uppercase tracking-wider">
+            Feature 2 • Dynamic Geometric Mental Topology & Diagnostic Autopsy
+          </span>
+          <h2 class="text-2xl font-bold text-[var(--charcoal)]">
+            Multidimensional Cognitive Radar & Visual Solutions Autopsy
+          </h2>
+          <p class="text-sm text-[var(--charcoal-muted)]">
+            Cattell-Horn-Carroll ($G_f, G_v, G_q, G_c$) polar topology with population benchmark overlays and step-by-step visual matrix deconstruction.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5">
+            <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            Re-Engineered Precision Suite
+          </span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: 8-Facet Biometric Spline Topology (7 Cols) -->
+        <div class="lg:col-span-7 tactile-card p-6 sm:p-8 space-y-6">
+          <!-- Top Header: 8-Facet Biometric Spline Topology -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--border)] pb-4">
+            <div>
+              <span class="text-xs font-mono uppercase text-[var(--accent)] font-bold tracking-wider block flex items-center gap-1.5">
+                <span class="h-2 w-2 rounded-full bg-[var(--accent)]"></span>
+                8-Facet Biometric Spline Topology
+              </span>
+              <h3 class="text-base font-bold text-[var(--charcoal)]">
+                Cattell-Horn-Carroll Cognitive Profile vs. Population Norms
+              </h3>
+            </div>
+            
+            <!-- Comparative Dual-Sphere Legend -->
+            <div class="flex items-center gap-2 p-1.5 rounded-xl bg-[var(--surface-subtle)] border border-[var(--border)] text-xs font-mono">
+              <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 shadow-sm">
+                <span class="h-3 w-3 rounded-full bg-[#D97706] ring-2 ring-amber-300 shadow-sm"></span>
+                <span class="font-bold text-amber-900">Your Profile (Orange)</span>
+              </div>
+              <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-200 border border-slate-300 shadow-sm">
+                <span class="h-3 w-3 rounded-full bg-[#64748B] ring-2 ring-slate-400 shadow-sm"></span>
+                <span class="font-bold text-slate-800">Pop. Average 50% (Gray)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2D Scientific Radar Canvas (Clean, Non-Interactive, Highlighting Average Population) -->
+          <div class="relative flex justify-center py-2 overflow-hidden select-none">
+            <!-- Canvas SVG (420x420, Center 210, 210, Radius 150) -->
+            <svg
+              id="radar-svg"
+              width="420"
+              height="420"
+              viewBox="0 0 420 420"
+              class="overflow-visible select-none max-w-full"
+            >
+              <defs>
+                <!-- Participant Biometric Amber Gradient (Personal Orange Sphere) -->
+                <linearGradient id="warmAmberRadarGradient" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#D97706" stop-opacity="0.55" />
+                  <stop offset="50%" stop-color="#F59E0B" stop-opacity="0.4" />
+                  <stop offset="100%" stop-color="#D97706" stop-opacity="0.25" />
+                </linearGradient>
+
+                <!-- Average Population Solid Gray Sphere Gradient -->
+                <radialGradient id="populationGraySphereGradient" cx="45%" cy="40%" r="60%">
+                  <stop offset="0%" stop-color="#94A3B8" stop-opacity="0.7" />
+                  <stop offset="70%" stop-color="#64748B" stop-opacity="0.6" />
+                  <stop offset="100%" stop-color="#475569" stop-opacity="0.5" />
+                </radialGradient>
+
+                <radialGradient id="dialRadialBackdrop" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#FAF8F5" stop-opacity="1" />
+                  <stop offset="85%" stop-color="#F5F2EB" stop-opacity="1" />
+                  <stop offset="100%" stop-color="#EAE5DC" stop-opacity="1" />
+                </radialGradient>
+
+                <filter id="radarVertexGlow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feDropShadow dx="0" dy="2" stdDeviation="5" flood-color="#D97706" flood-opacity="0.4" />
+                </filter>
+
+                <filter id="graySphereGlow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#475569" flood-opacity="0.25" />
+                </filter>
+              </defs>
+
+              <!-- Instrument Dial Backing Disk -->
+              <circle cx="210" cy="210" r="162" fill="url(#dialRadialBackdrop)" stroke="var(--border)" stroke-width="1.5" />
+              <circle cx="210" cy="210" r="168" fill="none" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="2 4" />
+
+              <!-- 24 Compass Degree Calibration Tick Marks -->
+              <g stroke="var(--border)" stroke-width="1" opacity="0.8">
+                <line x1="210" y1="48" x2="210" y2="58" stroke-width="2" />
+                <line x1="372" y1="210" x2="362" y2="210" stroke-width="2" />
+                <line x1="210" y1="372" x2="210" y2="362" stroke-width="2" />
+                <line x1="48" y1="210" x2="58" y2="210" stroke-width="2" />
+                <line x1="316" y1="104" x2="309" y2="111" stroke-width="1.8" />
+                <line x1="316" y1="316" x2="309" y2="309" stroke-width="1.8" />
+                <line x1="104" y1="316" x2="111" y2="309" stroke-width="1.8" />
+                <line x1="104" y1="104" x2="111" y2="111" stroke-width="1.8" />
+              </g>
+
+              <!-- Concentric Polar Circular Web Rings (20%, 40%, 60%, 80%, 100%) -->
+              <circle cx="210" cy="210" r="30" fill="none" stroke="var(--border)" stroke-width="1" stroke-dasharray="3 3" opacity="0.45" />
+              <circle cx="210" cy="210" r="60" fill="none" stroke="var(--border)" stroke-width="1" stroke-dasharray="3 3" opacity="0.45" />
+              <circle cx="210" cy="210" r="90" fill="none" stroke="var(--border)" stroke-width="1" stroke-dasharray="3 3" opacity="0.55" />
+              <circle cx="210" cy="210" r="120" fill="none" stroke="var(--border)" stroke-width="1" stroke-dasharray="3 3" opacity="0.65" />
+              <circle cx="210" cy="210" r="150" fill="none" stroke="var(--border)" stroke-width="1.8" />
+
+              <!-- Degree / Ring Labels -->
+              <text x="214" y="123" fill="var(--charcoal-muted)" font-size="8" font-family="monospace">60%</text>
+              <text x="214" y="93" fill="var(--charcoal-muted)" font-size="8" font-family="monospace">80%</text>
+              <text x="214" y="63" fill="var(--charcoal-muted)" font-size="8" font-family="monospace">100%</text>
+
+              <!-- 8 Polar Degree Quadrant Radial Spokes -->
+              <g stroke="var(--border)" stroke-width="1.2" opacity="0.65">
+                <line x1="210" y1="48" x2="210" y2="372" />
+                <line x1="48" y1="210" x2="372" y2="210" />
+                <line x1="104" y1="104" x2="316" y2="316" stroke-dasharray="2 3" />
+                <line x1="104" y1="316" x2="316" y2="104" stroke-dasharray="2 3" />
+              </g>
+
+              <!-- Central Reticle Hub -->
+              <circle cx="210" cy="210" r="3.5" fill="var(--accent)" />
+              <circle cx="210" cy="210" r="7" fill="none" stroke="var(--accent)" stroke-width="0.8" opacity="0.6" />
+
+              <!-- 1. AVERAGE POPULATION (50% • IQ 100): SOLID GRAY SPHERE -->
+              <path
+                id="benchmark-overlay-path"
+                d=""
+                fill="url(#populationGraySphereGradient)"
+                stroke="#475569"
+                stroke-width="2.5"
+                stroke-linejoin="round"
+                filter="url(#graySphereGlow)"
+                class="transition-all duration-300 ease-out"
+              />
+
+              <!-- 8 Benchmark Pips on the Gray Sphere Rim -->
+              <g id="benchmark-pips-container" class="select-none pointer-events-none">
+                <!-- Dynamically populated in JS -->
+              </g>
+
+              <!-- Population Average Baseline Callout Label -->
+              <text
+                x="210"
+                y="131"
+                text-anchor="middle"
+                fill="#475569"
+                font-size="8.5"
+                font-family="monospace"
+                font-weight="bold"
+                letter-spacing="0.04em"
+              >
+                POP. AVERAGE (50%)
+              </text>
+
+              <!-- 2. PARTICIPANT ACTIVE 8-FACET BIOMETRIC SPLINE PATH (ORANGE SPHERE) -->
+              <path
+                id="topology-main-path"
+                d=""
+                fill="url(#warmAmberRadarGradient)"
+                stroke="#D97706"
+                stroke-width="2.8"
+                stroke-linejoin="round"
+                filter="url(#radarVertexGlow)"
+                class="transition-all duration-300 ease-out"
+              />
+
+              <!-- 3. 8 SCIENTIFIC MEASUREMENT VERTEX NODES & BADGES -->
+              <g id="handles-container">
+                <!-- Dynamically populated in JS -->
+              </g>
+            </svg>
+          </div>
+
+          <!-- Dynamic Telemetry Statistics Ribbon -->
+          <div class="grid grid-cols-3 gap-2 p-3.5 rounded-2xl bg-[var(--surface-subtle)] border border-[var(--border)] font-mono text-center shadow-inner">
+            <div class="space-y-0.5">
+              <span class="text-[10px] uppercase text-[var(--charcoal-muted)] font-bold block">Cognitive Volume</span>
+              <span id="telemetry-volume" class="text-sm sm:text-base font-bold text-[var(--accent)]">74.8%</span>
+              <span class="text-[9px] text-[var(--charcoal-muted)] block">of Total Mental Space</span>
+            </div>
+            <div class="space-y-0.5 border-x border-[var(--border)]">
+              <span class="text-[10px] uppercase text-[var(--charcoal-muted)] font-bold block">Isotropy / Balance</span>
+              <span id="telemetry-balance" class="text-sm sm:text-base font-bold text-emerald-600">92%</span>
+              <span class="text-[9px] text-[var(--charcoal-muted)] block">Harmonic Symmetry</span>
+            </div>
+            <div class="space-y-0.5">
+              <span class="text-[10px] uppercase text-[var(--charcoal-muted)] font-bold block">Phenotype Apex</span>
+              <span id="telemetry-apex" class="text-xs sm:text-sm font-bold text-[var(--charcoal)] truncate block">Fluid-Spatial</span>
+              <span class="text-[9px] text-emerald-700 block font-semibold">Dual Dominance</span>
+            </div>
+          </div>
+
+          <!-- 4 Primary Domain Breakdown Cards with Population Delta Badges -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <!-- Fluid Reasoning -->
+            <div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] space-y-2.5 shadow-warm-xs">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="h-2.5 w-2.5 rounded-full bg-[#D97706]"></span>
+                  <span class="text-xs font-mono uppercase text-[#D97706] font-bold">Gf • Fluid Logic</span>
+                </div>
+                <div class="flex items-center gap-2 font-mono">
+                  <span class="text-sm font-bold text-[var(--charcoal)]" id="card-gf-score">90%</span>
+                  <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
+                    +40% vs Pop. Avg
+                  </span>
+                </div>
+              </div>
+              <p class="text-[11px] text-[var(--charcoal-muted)] leading-tight">
+                Abstract non-verbal pattern induction, transformation rules, and invariant reasoning.
+              </p>
+              <div class="space-y-1">
+                <div class="flex justify-between text-[10px] font-mono text-[var(--charcoal-muted)]">
+                  <span>Gf₁ Pattern: <strong class="text-[var(--charcoal)]">92%</strong></span>
+                  <span>Gf₂ Extrapolation: <strong class="text-[var(--charcoal)]">88%</strong></span>
+                </div>
+                <div class="w-full bg-[var(--surface-subtle)] h-2 rounded-full overflow-hidden border border-[var(--border)] relative">
+                  <div class="absolute top-0 bottom-0 left-1/2 w-0.5 bg-[#78716C]/60 z-10" title="50% Population Median"></div>
+                  <div id="bar-gf" class="h-full bg-[#D97706] rounded-full transition-all duration-300" style="width: 90%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Visual-Spatial -->
+            <div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] space-y-2.5 shadow-warm-xs">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="h-2.5 w-2.5 rounded-full bg-[#2563EB]"></span>
+                  <span class="text-xs font-mono uppercase text-[#2563EB] font-bold">Gv • Spatial Processing</span>
+                </div>
+                <div class="flex items-center gap-2 font-mono">
+                  <span class="text-sm font-bold text-[var(--charcoal)]" id="card-gv-score">88%</span>
+                  <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
+                    +38% vs Pop. Avg
+                  </span>
+                </div>
+              </div>
+              <p class="text-[11px] text-[var(--charcoal-muted)] leading-tight">
+                Mental 3D rotation, isometric cube net unfolding, and bilateral spatial vectoring.
+              </p>
+              <div class="space-y-1">
+                <div class="flex justify-between text-[10px] font-mono text-[var(--charcoal-muted)]">
+                  <span>Gv₁ 3D Rotation: <strong class="text-[var(--charcoal)]">90%</strong></span>
+                  <span>Gv₂ Spatial Memory: <strong class="text-[var(--charcoal)]">85%</strong></span>
+                </div>
+                <div class="w-full bg-[var(--surface-subtle)] h-2 rounded-full overflow-hidden border border-[var(--border)] relative">
+                  <div class="absolute top-0 bottom-0 left-1/2 w-0.5 bg-[#78716C]/60 z-10" title="50% Population Median"></div>
+                  <div id="bar-gv" class="h-full bg-[#2563EB] rounded-full transition-all duration-300" style="width: 88%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quantitative -->
+            <div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] space-y-2.5 shadow-warm-xs">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="h-2.5 w-2.5 rounded-full bg-[#059669]"></span>
+                  <span class="text-xs font-mono uppercase text-[#059669] font-bold">Gq • Quantitative Logic</span>
+                </div>
+                <div class="flex items-center gap-2 font-mono">
+                  <span class="text-sm font-bold text-[var(--charcoal)]" id="card-gq-score">81%</span>
+                  <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
+                    +31% vs Pop. Avg
+                  </span>
+                </div>
+              </div>
+              <p class="text-[11px] text-[var(--charcoal-muted)] leading-tight">
+                Recursive numerical sequences, difference polynomials, and modular algorithmic ciphers.
+              </p>
+              <div class="space-y-1">
+                <div class="flex justify-between text-[10px] font-mono text-[var(--charcoal-muted)]">
+                  <span>Gq₁ Induction: <strong class="text-[var(--charcoal)]">82%</strong></span>
+                  <span>Gq₂ Algorithmic: <strong class="text-[var(--charcoal)]">80%</strong></span>
+                </div>
+                <div class="w-full bg-[var(--surface-subtle)] h-2 rounded-full overflow-hidden border border-[var(--border)] relative">
+                  <div class="absolute top-0 bottom-0 left-1/2 w-0.5 bg-[#78716C]/60 z-10" title="50% Population Median"></div>
+                  <div id="bar-gq" class="h-full bg-[#059669] rounded-full transition-all duration-300" style="width: 81%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Deductive -->
+            <div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] space-y-2.5 shadow-warm-xs">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="h-2.5 w-2.5 rounded-full bg-[#7C3AED]"></span>
+                  <span class="text-xs font-mono uppercase text-[#7C3AED] font-bold">Gc • Deductive Syllogisms</span>
+                </div>
+                <div class="flex items-center gap-2 font-mono">
+                  <span class="text-sm font-bold text-[var(--charcoal)]" id="card-gc-score">81%</span>
+                  <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
+                    +31% vs Pop. Avg
+                  </span>
+                </div>
+              </div>
+              <p class="text-[11px] text-[var(--charcoal-muted)] leading-tight">
+                Aristotelian quantified predicate logic, categorical premises, and formal relational invariance.
+              </p>
+              <div class="space-y-1">
+                <div class="flex justify-between text-[10px] font-mono text-[var(--charcoal-muted)]">
+                  <span>Gc₁ Syllogisms: <strong class="text-[var(--charcoal)]">84%</strong></span>
+                  <span>Gc₂ Propositional: <strong class="text-[var(--charcoal)]">78%</strong></span>
+                </div>
+                <div class="w-full bg-[var(--surface-subtle)] h-2 rounded-full overflow-hidden border border-[var(--border)] relative">
+                  <div class="absolute top-0 bottom-0 left-1/2 w-0.5 bg-[#78716C]/60 z-10" title="50% Population Median"></div>
+                  <div id="bar-gc" class="h-full bg-[#7C3AED] rounded-full transition-all duration-300" style="width: 81%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Visual Solutions Autopsy Suite (5 Cols) -->
+        <div class="lg:col-span-5 tactile-card p-6 sm:p-8 space-y-5">
+          <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
+            <div>
+              <span class="text-xs font-mono uppercase text-[var(--accent)] font-bold tracking-wider block">
+                Visual Forensic Matrix Studio
+              </span>
+              <h3 class="font-bold text-base text-[var(--charcoal)]">
+                Solutions & Invariant Autopsy
+              </h3>
+            </div>
+            <span class="text-xs font-mono text-[var(--charcoal-muted)] bg-[var(--surface-subtle)] px-2.5 py-1 rounded-full border border-[var(--border)] font-semibold">
+              Live Case Switcher
+            </span>
+          </div>
+
+          <!-- Interactive Case Study Tabs -->
+          <div class="flex items-center gap-1.5 p-1 rounded-xl bg-[var(--surface-subtle)] border border-[var(--border)] text-xs font-mono">
+            <button
+              type="button"
+              id="tab-btn-36"
+              onclick="switchAutopsyCase('case-36')"
+              class="flex-1 py-1.5 rounded-lg font-bold text-center transition-all bg-[var(--surface)] text-[var(--accent)] shadow-sm"
+            >
+              Item 36 (Raven 3x3)
+            </button>
+            <button
+              type="button"
+              id="tab-btn-25"
+              onclick="switchAutopsyCase('case-25')"
+              class="flex-1 py-1.5 rounded-lg font-bold text-center transition-all text-[var(--charcoal-muted)] hover:text-[var(--charcoal)]"
+            >
+              Item 25 (Boolean XOR)
+            </button>
+            <button
+              type="button"
+              id="tab-btn-16"
+              onclick="switchAutopsyCase('case-16')"
+              class="flex-1 py-1.5 rounded-lg font-bold text-center transition-all text-[var(--charcoal-muted)] hover:text-[var(--charcoal)]"
+            >
+              Item 16 (Sequence)
+            </button>
+          </div>
+
+          <!-- CASE 1: ITEM 36 (Tri-Variable Raven Matrix) -->
+          <div id="case-36" class="space-y-4">
+            <!-- Header Badge -->
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="h-6 w-6 rounded-md bg-emerald-500 text-white font-mono text-xs font-bold flex items-center justify-center shadow-sm">
+                  36
+                </span>
+                <span class="text-xs sm:text-sm font-bold text-[var(--charcoal)]">
+                  Tri-Variable Orthogonal Raven Synthesis
+                </span>
+              </div>
+              <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold border border-emerald-300">
+                100% Invariant Match
+              </span>
+            </div>
+
+            <!-- Miniature Visual 3x3 Raven Matrix SVG -->
+            <div class="p-3.5 rounded-2xl bg-[var(--surface)] border border-[var(--border)] shadow-inner space-y-2">
+              <span class="text-[10px] font-mono uppercase text-[var(--charcoal-muted)] font-bold tracking-wider block">
+                Visual Transformation Matrix (3x3 Grid):
+              </span>
+              <div class="grid grid-cols-3 gap-2 p-2 bg-[var(--surface-subtle)] rounded-xl border border-[var(--border)]">
+                <!-- Row 1 -->
+                <!-- [1,1] Circle, 0 lines, 3 dots -->
+                <div class="aspect-square rounded-lg border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center p-1.5">
+                  <svg viewBox="0 0 50 50" class="w-full h-full text-[var(--charcoal)]">
+                    <circle cx="25" cy="25" r="18" fill="none" stroke="currentColor" stroke-width="2.5" />
+                    <circle cx="18" cy="25" r="2.5" fill="var(--accent)" />
+                    <circle cx="25" cy="25" r="2.5" fill="var(--accent)" />
+                    <circle cx="32" cy="25" r="2.5" fill="var(--accent)" />
+                  </svg>
+                </div>
+                <!-- [1,2] Triangle, 1 line, 2 dots -->
+                <div class="aspect-square rounded-lg border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center p-1.5">
+                  <svg viewBox="0 0 50 50" class="w-full h-full text-[var(--charcoal)]">
+                    <polygon points="25,8 43,42 7,42" fill="none" stroke="currentColor" stroke-width="2.5" />
+                    <line x1="25" y1="8" x2="25" y2="42" stroke="currentColor" stroke-width="2" />
+                    <circle cx="20" cy="35" r="2.5" fill="var(--accent)" />
+                    <circle cx="30" cy="35" r="2.5" fill="var(--accent)" />
+                  </svg>
+                </div>
+                <!-- [1,3] Square, 2 lines, 1 dot -->
+                <div class="aspect-square rounded-lg border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center p-1.5">
+                  <svg viewBox="0 0 50 50" class="w-full h-full text-[var(--charcoal)]">
+                    <rect x="8" y="8" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2.5" />
+                    <line x1="25" y1="8" x2="25" y2="42" stroke="currentColor" stroke-width="2" />
+                    <line x1="8" y1="25" x2="42" y2="25" stroke="currentColor" stroke-width="2" />
+                    <circle cx="25" cy="34" r="2.5" fill="var(--accent)" />
+                  </svg>
+                </div>
+
+                <!-- Row 2 -->
+                <!-- [2,1] Triangle, 0 lines, 3 dots -->
+                <div class="aspect-square rounded-lg border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center p-1.5">
+                  <svg viewBox="0 0 50 50" class="w-full h-full text-[var(--charcoal)]">
+                    <polygon points="25,8 43,42 7,42" fill="none" stroke="currentColor" stroke-width="2.5" />
+                    <circle cx="18" cy="32" r="2.5" fill="var(--accent)" />
+                    <circle cx="25" cy="32" r="2.5" fill="var(--accent)" />
+                    <circle cx="32" cy="32" r="2.5" fill="var(--accent)" />
+                  </svg>
+                </div>
+                <!-- [2,2] Square, 1 line, 2 dots -->
+                <div class="aspect-square rounded-lg border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center p-1.5">
+                  <svg viewBox="0 0 50 50" class="w-full h-full text-[var(--charcoal)]">
+                    <rect x="8" y="8" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2.5" />
+                    <line x1="25" y1="8" x2="25" y2="42" stroke="currentColor" stroke-width="2" />
+                    <circle cx="20" cy="25" r="2.5" fill="var(--accent)" />
+                    <circle cx="30" cy="25" r="2.5" fill="var(--accent)" />
+                  </svg>
+                </div>
+                <!-- [2,3] Pentagon, 2 lines, 1 dot -->
+                <div class="aspect-square rounded-lg border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center p-1.5">
+                  <svg viewBox="0 0 50 50" class="w-full h-full text-[var(--charcoal)]">
+                    <polygon points="25,7 44,21 37,43 13,43 6,21" fill="none" stroke="currentColor" stroke-width="2.5" />
+                    <line x1="25" y1="7" x2="25" y2="43" stroke="currentColor" stroke-width="2" />
+                    <line x1="10" y1="26" x2="40" y2="26" stroke="currentColor" stroke-width="2" />
+                    <circle cx="25" cy="35" r="2.5" fill="var(--accent)" />
+                  </svg>
+                </div>
+
+                <!-- Row 3 -->
+                <!-- [3,1] Square, 0 lines, 3 dots -->
+                <div class="aspect-square rounded-lg border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center p-1.5">
+                  <svg viewBox="0 0 50 50" class="w-full h-full text-[var(--charcoal)]">
+                    <rect x="8" y="8" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2.5" />
+                    <circle cx="18" cy="25" r="2.5" fill="var(--accent)" />
+                    <circle cx="25" cy="25" r="2.5" fill="var(--accent)" />
+                    <circle cx="32" cy="25" r="2.5" fill="var(--accent)" />
+                  </svg>
+                </div>
+                <!-- [3,2] Pentagon, 1 line, 2 dots -->
+                <div class="aspect-square rounded-lg border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center p-1.5">
+                  <svg viewBox="0 0 50 50" class="w-full h-full text-[var(--charcoal)]">
+                    <polygon points="25,7 44,21 37,43 13,43 6,21" fill="none" stroke="currentColor" stroke-width="2.5" />
+                    <line x1="25" y1="7" x2="25" y2="43" stroke="currentColor" stroke-width="2" />
+                    <circle cx="20" cy="32" r="2.5" fill="var(--accent)" />
+                    <circle cx="30" cy="32" r="2.5" fill="var(--accent)" />
+                  </svg>
+                </div>
+                <!-- [3,3] TARGET QUESTION SLOT -->
+                <div class="aspect-square rounded-lg border-2 border-dashed border-[var(--accent)] bg-[var(--accent-soft)] flex flex-col items-center justify-center p-1 relative shadow-md">
+                  <span class="font-mono text-base font-bold text-[var(--accent)] animate-pulse">?</span>
+                  <span class="text-[8px] font-mono font-bold text-[var(--accent)] uppercase">Slot 9</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Visual Rule Deconstruction Strip -->
+            <div class="space-y-2 bg-[var(--surface)] p-3.5 rounded-xl border border-[var(--border)]">
+              <span class="text-[11px] font-mono text-[var(--charcoal-muted)] uppercase tracking-wider font-semibold block">
+                Tri-Invariant Mathematical Derivation:
+              </span>
+
+              <!-- Invariant 1: Outer Geometry -->
+              <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-[var(--surface-subtle)] border border-[var(--border)]">
+                <div class="flex items-center gap-2 font-mono">
+                  <span class="text-[var(--accent)] font-bold">1. Outer Edges:</span>
+                  <span>Square (4) → Pentagon (5) → <strong>Hexagon (6)</strong></span>
+                </div>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">+1 Side</span>
+              </div>
+
+              <!-- Invariant 2: Internal Lines -->
+              <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-[var(--surface-subtle)] border border-[var(--border)]">
+                <div class="flex items-center gap-2 font-mono">
+                  <span class="text-[var(--accent)] font-bold">2. Line Density:</span>
+                  <span>None (0) → Single Line (1) → <strong>Cross Lines (2)</strong></span>
+                </div>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">+1 Line</span>
+              </div>
+
+              <!-- Invariant 3: Core Nuclei -->
+              <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-[var(--surface-subtle)] border border-[var(--border)]">
+                <div class="flex items-center gap-2 font-mono">
+                  <span class="text-[var(--accent)] font-bold">3. Core Dots:</span>
+                  <span>3 Dots → 2 Dots → <strong>1 Dot</strong></span>
+                </div>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">-1 Dot</span>
+              </div>
+            </div>
+
+            <!-- Candidate Tile Comparison & Trap Analysis with Visual SVGs -->
+            <div class="space-y-2">
+              <span class="text-[11px] font-mono text-[var(--charcoal-muted)] uppercase tracking-wider font-semibold block">
+                Option Tile Differential Matrix (Trap Elimination):
+              </span>
+              
+              <div class="grid grid-cols-1 gap-2.5 text-xs font-mono">
+                <!-- Tile A (Correct) -->
+                <div class="p-3 rounded-xl border-2 border-emerald-500 bg-emerald-500/10 flex items-center gap-3">
+                  <div class="h-12 w-12 rounded-lg border border-emerald-400 bg-[var(--surface)] p-1 shrink-0 flex items-center justify-center">
+                    <svg viewBox="0 0 50 50" class="w-full h-full text-emerald-700">
+                      <polygon points="25,6 43,16 43,34 25,44 7,34 7,16" fill="none" stroke="currentColor" stroke-width="2.5" />
+                      <line x1="25" y1="6" x2="25" y2="44" stroke="currentColor" stroke-width="2" />
+                      <line x1="7" y1="25" x2="43" y2="25" stroke="currentColor" stroke-width="2" />
+                      <circle cx="25" cy="35" r="2.5" fill="#D97706" />
+                    </svg>
+                  </div>
+                  <div class="flex-1 space-y-0.5">
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-emerald-800 bg-emerald-200 px-1.5 py-0.5 rounded text-[11px]">Tile A (Validated)</span>
+                      <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">✓ 100% Invariant Match</span>
+                    </div>
+                    <p class="text-[11px] text-emerald-900 font-sans leading-tight">
+                      Hexagon (6 sides) + Cross Lines (2) + 1 Dot. Perfectly completes all 3 orthogonal vector rules.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Tile B (Trap) -->
+                <div class="p-3 rounded-xl border border-rose-300 bg-rose-500/5 flex items-center gap-3 opacity-90">
+                  <div class="h-12 w-12 rounded-lg border border-rose-200 bg-[var(--surface)] p-1 shrink-0 flex items-center justify-center">
+                    <svg viewBox="0 0 50 50" class="w-full h-full text-rose-700">
+                      <polygon points="25,6 43,16 43,34 25,44 7,34 7,16" fill="none" stroke="currentColor" stroke-width="2.5" />
+                      <line x1="25" y1="6" x2="25" y2="44" stroke="currentColor" stroke-width="2" />
+                      <circle cx="20" cy="25" r="2.5" fill="#D97706" />
+                      <circle cx="30" cy="25" r="2.5" fill="#D97706" />
+                    </svg>
+                  </div>
+                  <div class="flex-1 space-y-0.5">
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-rose-800 bg-rose-100 px-1.5 py-0.5 rounded text-[11px]">Tile B (Distractor Trap)</span>
+                      <span class="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">✗ Failed Dot & Line Count</span>
+                    </div>
+                    <p class="text-[11px] text-rose-900 font-sans leading-tight">
+                      Hexagon with only 1 line and 2 dots. Traps participants who overlook simultaneous nuclear dot decay.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Tile C (Trap) -->
+                <div class="p-3 rounded-xl border border-rose-300 bg-rose-500/5 flex items-center gap-3 opacity-90">
+                  <div class="h-12 w-12 rounded-lg border border-rose-200 bg-[var(--surface)] p-1 shrink-0 flex items-center justify-center">
+                    <svg viewBox="0 0 50 50" class="w-full h-full text-rose-700">
+                      <polygon points="25,7 44,21 37,43 13,43 6,21" fill="none" stroke="currentColor" stroke-width="2.5" />
+                      <line x1="25" y1="7" x2="25" y2="43" stroke="currentColor" stroke-width="2" />
+                      <line x1="10" y1="26" x2="40" y2="26" stroke="currentColor" stroke-width="2" />
+                      <circle cx="25" cy="35" r="2.5" fill="#D97706" />
+                    </svg>
+                  </div>
+                  <div class="flex-1 space-y-0.5">
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-rose-800 bg-rose-100 px-1.5 py-0.5 rounded text-[11px]">Tile C (Distractor Trap)</span>
+                      <span class="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">✗ Failed Edge Progression</span>
+                    </div>
+                    <p class="text-[11px] text-rose-900 font-sans leading-tight">
+                      Pentagon with cross & 1 dot. Replicates Column 2 rather than incrementing to a 6-sided polygon (+1).
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Clinical Heuristic Insight -->
+            <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-400/30 text-xs space-y-1">
+              <span class="font-mono text-[10px] uppercase font-bold text-amber-900 block flex items-center gap-1.5">
+                <span class="h-2 w-2 rounded-full bg-amber-600"></span>
+                Psychometric Diagnostic Insight:
+              </span>
+              <p class="text-amber-950 leading-relaxed text-[11px]">
+                <strong>The Feature Binding Paradox:</strong> Average test-takers instinctively focus on outer shape boundaries and overlook simultaneous nuclear dot decay, causing 42% to falsely select Tile B. High-IQ participants systematically decouple and verify all three orthogonal dimensions independently.
+              </p>
+            </div>
+          </div>
+
+          <!-- CASE 2: ITEM 25 (Boolean XOR Cancellation) -->
+          <div id="case-25" class="space-y-4 hidden">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="h-6 w-6 rounded-md bg-blue-500 text-white font-mono text-xs font-bold flex items-center justify-center shadow-sm">
+                  25
+                </span>
+                <span class="text-xs sm:text-sm font-bold text-[var(--charcoal)]">
+                  Boolean Spatial XOR Cancellation
+                </span>
+              </div>
+              <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-bold border border-blue-300">
+                Spatial Inversion
+              </span>
+            </div>
+
+            <!-- Miniature Visual XOR Diagram -->
+            <div class="p-4 rounded-2xl bg-[var(--surface)] border border-[var(--border)] shadow-inner space-y-2">
+              <span class="text-[10px] font-mono uppercase text-[var(--charcoal-muted)] font-bold tracking-wider block">
+                Visual Boolean Logic Operation (A ⊕ B):
+              </span>
+              <div class="flex items-center justify-center gap-3 p-3 bg-[var(--surface-subtle)] rounded-xl border border-[var(--border)]">
+                <!-- Cell 1: Cross -->
+                <div class="h-14 w-14 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2 flex items-center justify-center">
+                  <svg viewBox="0 0 40 40" class="w-full h-full text-[var(--charcoal)]">
+                    <line x1="20" y1="5" x2="20" y2="35" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                    <line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                  </svg>
+                </div>
+                <span class="font-mono text-lg font-bold text-[var(--accent)]">⊕</span>
+                <!-- Cell 2: Vertical Line -->
+                <div class="h-14 w-14 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2 flex items-center justify-center">
+                  <svg viewBox="0 0 40 40" class="w-full h-full text-[var(--charcoal)]">
+                    <line x1="20" y1="5" x2="20" y2="35" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                  </svg>
+                </div>
+                <span class="font-mono text-lg font-bold text-emerald-600">=</span>
+                <!-- Result: Horizontal Line -->
+                <div class="h-14 w-14 rounded-lg border-2 border-emerald-500 bg-emerald-500/10 p-2 flex items-center justify-center shadow-sm">
+                  <svg viewBox="0 0 40 40" class="w-full h-full text-emerald-700">
+                    <line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mathematical Derivation -->
+            <div class="space-y-2 bg-[var(--surface)] p-3.5 rounded-xl border border-[var(--border)]">
+              <span class="text-[11px] font-mono text-[var(--charcoal-muted)] uppercase tracking-wider font-semibold block">
+                Invariant Rule Breakdown:
+              </span>
+              <div class="p-2.5 rounded-lg bg-[var(--surface-subtle)] border border-[var(--border)] text-xs font-mono space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="text-blue-700 font-bold">XOR Rule: (A ∪ B) \ (A ∩ B)</span>
+                  <span class="text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold">Orthogonal Cancellation</span>
+                </div>
+                <p class="text-[11px] text-[var(--charcoal)] font-sans">
+                  The vertical stroke exists in both Operand 1 and Operand 2; therefore, it cancels out completely. Only the unique horizontal line remains.
+                </p>
+              </div>
+            </div>
+
+            <!-- Distractor Trap Breakdown -->
+            <div class="space-y-2 text-xs font-mono">
+              <div class="p-2.5 rounded-xl border border-rose-200 bg-rose-500/5 flex items-center justify-between">
+                <div>
+                  <span class="font-bold text-rose-700">The Additive Trap (OR):</span>
+                  <p class="text-[11px] text-rose-900 font-sans">63% of test-takers sum the shapes together and pick the Cross (+), failing the subtraction rule.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CASE 3: ITEM 16 (Quantitative Leapfrog Sequence) -->
+          <div id="case-16" class="space-y-4 hidden">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="h-6 w-6 rounded-md bg-purple-500 text-white font-mono text-xs font-bold flex items-center justify-center shadow-sm">
+                  16
+                </span>
+                <span class="text-xs sm:text-sm font-bold text-[var(--charcoal)]">
+                  Logarithmic Leapfrog Series
+                </span>
+              </div>
+              <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 font-bold border border-purple-300">
+                2ⁿ Exponential Delta
+              </span>
+            </div>
+
+            <!-- Sequence Display -->
+            <div class="p-4 rounded-2xl bg-[var(--surface)] border border-[var(--border)] shadow-inner space-y-3">
+              <span class="text-[10px] font-mono uppercase text-[var(--charcoal-muted)] font-bold tracking-wider block">
+                Number Progression & Differential Arcs:
+              </span>
+              <div class="flex items-center justify-between gap-1 p-3 bg-[var(--surface-subtle)] rounded-xl border border-[var(--border)] font-mono text-center">
+                <div>
+                  <span class="text-xs text-[var(--charcoal-muted)] block text-[10px]">+2</span>
+                  <span class="text-sm font-bold text-[var(--charcoal)]">3</span>
+                </div>
+                <span class="text-[var(--border)]">→</span>
+                <div>
+                  <span class="text-xs text-[var(--charcoal-muted)] block text-[10px]">+4</span>
+                  <span class="text-sm font-bold text-[var(--charcoal)]">5</span>
+                </div>
+                <span class="text-[var(--border)]">→</span>
+                <div>
+                  <span class="text-xs text-[var(--charcoal-muted)] block text-[10px]">+8</span>
+                  <span class="text-sm font-bold text-[var(--charcoal)]">9</span>
+                </div>
+                <span class="text-[var(--border)]">→</span>
+                <div>
+                  <span class="text-xs text-[var(--charcoal-muted)] block text-[10px]">+16</span>
+                  <span class="text-sm font-bold text-[var(--charcoal)]">17</span>
+                </div>
+                <span class="text-[var(--border)]">→</span>
+                <div>
+                  <span class="text-xs text-[var(--charcoal-muted)] block text-[10px]">+32</span>
+                  <span class="text-sm font-bold text-[var(--charcoal)]">33</span>
+                </div>
+                <span class="text-[var(--border)]">→</span>
+                <div class="p-1 rounded-lg bg-emerald-500/10 border border-emerald-400">
+                  <span class="text-xs text-emerald-600 block text-[10px] font-bold">+64</span>
+                  <span class="text-sm font-bold text-emerald-700">97</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-3 rounded-xl bg-purple-500/10 border border-purple-400/30 text-xs space-y-1">
+              <span class="font-mono text-[10px] uppercase font-bold text-purple-900 block">
+                Second-Order Differential Rule:
+              </span>
+              <p class="text-purple-950 leading-relaxed text-[11px]">
+                Each successive difference doubles: \(\Delta_k = 2^k\). The final term is \(33 + 2^6/2 = 33 + 64 = 97\).
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 3: FLOATING TACTICAL MINI-MAP TRAY & EXAM TIMER SYSTEM -->
+    <!-- ===================================================================== -->
+    <section class="space-y-6">
+      <div class="border-b border-[var(--border)] pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <span class="font-mono text-xs font-bold text-[var(--accent)] uppercase tracking-wider">
+            Feature 3 • High-Throughput Exam Experience
+          </span>
+          <h2 class="text-2xl font-bold text-[var(--charcoal)]">
+            Floating Tactical Mini-Map Tray with 36 Pills & Exam Timer
+          </h2>
+          <p class="text-sm text-[var(--charcoal-muted)]">
+            Docked tactical navigation with live Mensa exam countdown, quick-jump question nodes, and bookmark flagging.
+          </p>
+        </div>
+        <div class="text-xs font-mono text-[var(--charcoal-muted)] bg-[var(--surface-subtle)] border border-[var(--border)] px-3 py-1.5 rounded-lg">
+          36 Discrete Nodes • 4 Thematic Stages
+        </div>
+      </div>
+
+      <!-- Demo Container for Mini-Map Display -->
+      <div class="tactile-card p-6 sm:p-8 space-y-6">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[var(--border)] pb-4">
+          <div class="space-y-1">
+            <span class="text-xs font-mono text-[var(--charcoal-muted)] uppercase tracking-wider">
+              Simulation Window: Active Stage 4 (Q29 – Q36)
+            </span>
+            <h4 class="text-base font-bold text-[var(--charcoal)]">
+              Current Question: Q36 • Tri-Variable Orthogonal Raven Synthesis
+            </h4>
+          </div>
+
+          <!-- Timer Mode Toggle & Flag Button -->
+          <div class="flex items-center gap-3">
+            <button
+              type="button"
+              onclick="toggleFlag(36)"
+              id="btn-flag-36"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-xs font-mono font-semibold text-[var(--charcoal)] hover:border-[var(--accent)] transition-all shadow-sm"
+            >
+              <span id="flag-icon-36">⚐</span>
+              <span id="flag-text-36">Flag for Review</span>
+            </button>
+
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--surface-subtle)] border border-[var(--border)] font-mono text-xs">
+              <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span class="text-[var(--charcoal-muted)]">Time:</span>
+              <span id="demo-timer" class="font-bold text-[var(--accent)]">24:18</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 36-Item Mini-Map Pill Strip -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between text-xs font-mono text-[var(--charcoal-muted)]">
+            <span>Progress: 32 / 36 Answered (88%)</span>
+            <div class="flex items-center gap-3">
+              <span class="inline-flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-emerald-500"></span> Answered</span>
+              <span class="inline-flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-[var(--accent)]"></span> Current</span>
+              <span class="inline-flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-purple-500"></span> Flagged</span>
+            </div>
+          </div>
+
+          <!-- 36-Node Interactive Grid Strip -->
+          <div class="grid grid-cols-6 sm:grid-cols-12 md:grid-cols-18 gap-2" id="pill-grid">
+            <!-- Dynamically populated via script -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Floating Dock Preview at Bottom of Screen -->
+  <aside class="fixed bottom-4 inset-x-4 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 max-w-2xl w-full z-50">
+    <div class="tactile-card p-3 shadow-2xl bg-[var(--surface)]/95 backdrop-blur-md border border-[var(--border)] flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-xl bg-[var(--accent-soft)] flex items-center justify-center text-[var(--accent)] font-mono font-bold text-xs">
+          36
+        </div>
+        <div class="text-xs">
+          <span class="font-bold text-[var(--charcoal)] block">Stage 4 / 4: Final Deductive Item</span>
+          <span class="text-[var(--charcoal-muted)] font-mono text-[11px]">Auto-saved to Response Vault</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          onclick="toggleFlag(36)"
+          class="px-3 py-2 rounded-xl border border-[var(--border)] bg-[var(--surface-subtle)] hover:bg-[var(--surface)] text-xs font-mono text-[var(--charcoal)]"
+        >
+          Toggle Flag
+        </button>
+        <button
+          type="button"
+          onclick="alert('All 36 items verified! Submitting to Scoring Engine with SEM ±4 standard.');"
+          class="px-5 py-2 rounded-xl bg-[var(--accent)] hover:opacity-90 active:scale-95 text-white text-xs font-bold font-mono tracking-wider uppercase transition-all shadow-md"
+        >
+          Review & Submit →
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Interactive Demo Logic -->
+  <script>
+    // Theme Switcher
+    function setTheme(theme) {
+      document.body.className = '';
+      document.querySelectorAll('#btn-theme-scientific, #btn-theme-obsidian, #btn-theme-bauhaus').forEach(b => {
+        b.className = 'px-3 py-1.5 rounded-lg text-[var(--charcoal-muted)] hover:text-[var(--charcoal)]';
+      });
+
+      if (theme === 'obsidian') {
+        document.body.classList.add('theme-obsidian');
+        document.getElementById('btn-theme-obsidian').className = 'px-3 py-1.5 rounded-lg bg-[var(--surface)] text-[var(--charcoal)] shadow-sm';
+      } else if (theme === 'bauhaus') {
+        document.body.classList.add('theme-bauhaus');
+        document.getElementById('btn-theme-bauhaus').className = 'px-3 py-1.5 rounded-lg bg-[var(--surface)] text-[var(--charcoal)] shadow-sm';
+      } else {
+        document.getElementById('btn-theme-scientific').className = 'px-3 py-1.5 rounded-lg bg-[var(--surface)] text-[var(--charcoal)] shadow-sm';
+      }
+    }
+
+    // Interactive Tile Docking Mechanics
+    const tileSVGs = {
+      a: `<svg viewBox="0 0 100 100" class="w-full h-full p-2"><polygon points="50,14 86,40 72,84 28,84 14,40" fill="none" stroke="currentColor" stroke-width="4"/><line x1="50" y1="14" x2="50" y2="84" stroke="currentColor" stroke-width="3"/><line x1="20" y1="52" x2="80" y2="52" stroke="currentColor" stroke-width="3"/><circle cx="50" cy="68" r="5" fill="var(--accent)"/></svg>`,
+      b: `<svg viewBox="0 0 100 100" class="w-full h-full p-2"><rect x="18" y="18" width="64" height="64" fill="none" stroke="currentColor" stroke-width="4"/><line x1="18" y1="50" x2="82" y2="50" stroke="currentColor" stroke-width="3"/><circle cx="50" cy="35" r="4.5" fill="var(--accent)"/><circle cx="50" cy="65" r="4.5" fill="var(--accent)"/></svg>`,
+      c: `<svg viewBox="0 0 100 100" class="w-full h-full p-2"><polygon points="50,12 85,32 85,68 50,88 15,68 15,32" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="35" cy="50" r="4.5" fill="var(--accent)"/><circle cx="50" cy="50" r="4.5" fill="var(--accent)"/><circle cx="65" cy="50" r="4.5" fill="var(--accent)"/></svg>`,
+      d: `<svg viewBox="0 0 100 100" class="w-full h-full p-2"><polygon points="50,14 86,84 14,84" fill="none" stroke="currentColor" stroke-width="4"/><line x1="50" y1="14" x2="50" y2="84" stroke="currentColor" stroke-width="3"/><line x1="26" y1="60" x2="74" y2="60" stroke="currentColor" stroke-width="3"/><circle cx="40" cy="74" r="4.5" fill="var(--accent)"/><circle cx="60" cy="74" r="4.5" fill="var(--accent)"/></svg>`
+    };
+
+    let selectedTileId = null;
+
+    function previewTile(id) {
+      if (selectedTileId) return; // Keep locked tile
+      const placeholder = document.getElementById('target-placeholder');
+      const docked = document.getElementById('target-docked');
+      placeholder.classList.add('hidden');
+      docked.classList.remove('hidden');
+      docked.innerHTML = tileSVGs[id];
+    }
+
+    function clearPreview() {
+      if (selectedTileId) return;
+      document.getElementById('target-placeholder').classList.remove('hidden');
+      const docked = document.getElementById('target-docked');
+      docked.classList.add('hidden');
+      docked.innerHTML = '';
+    }
+
+    function selectTile(id) {
+      selectedTileId = id;
+      document.querySelectorAll('.option-tile').forEach(t => t.classList.remove('selected'));
+      document.getElementById(`opt-${id}`).classList.add('selected');
+
+      document.getElementById('target-placeholder').classList.add('hidden');
+      const docked = document.getElementById('target-docked');
+      docked.classList.remove('hidden');
+      docked.innerHTML = tileSVGs[id];
+
+      const status = document.getElementById('status-text');
+      if (id === 'a') {
+        status.innerHTML = `<span class="text-emerald-600 font-bold">Tile A Locked in Slot 9!</span> Satisfies all 3 orthogonal constraints.`;
+      } else {
+        status.innerHTML = `<span class="text-[var(--accent)] font-bold">Tile ${id.toUpperCase()} Docked.</span> (Notice how the dot and side rules compare against rows 1 and 2).`;
+      }
+    }
+
+    // =====================================================================
+        // =====================================================================
+    // 8-FACET BIOMETRIC SPLINE ENGINE (NON-INTERACTIVE, POPULATION BENCHMARK)
+    // =====================================================================
+    // 8-Facet CHC Profile State
+    const facetScores = {
+      gf1: 92, // Pattern Induction (-90deg, Top)
+      gf2: 88, // Rule Extrapolation (-45deg, Top-Right)
+      gv1: 90, // 3D Mental Rotation (0deg, Right)
+      gv2: 85, // Spatial Working Memory (45deg, Bottom-Right)
+      gq1: 82, // Quantitative Induction (90deg, Bottom)
+      gq2: 80, // Algorithmic Logic (135deg, Bottom-Left)
+      gc1: 84, // Deductive Syllogisms (180deg, Left)
+      gc2: 78  // Relational Invariance (225deg, Top-Left)
+    };
+
+    // 8 Facet Definitions with Polar Angles (Center = 210, 210, R = 150)
+    const facetDefs = [
+      { id: 'gf1', code: 'Gf₁', label: 'Pattern Induction', domain: 'gf', angleDeg: -90, color: '#D97706' },
+      { id: 'gf2', code: 'Gf₂', label: 'Rule Extrapolation', domain: 'gf', angleDeg: -45, color: '#F59E0B' },
+      { id: 'gv1', code: 'Gv₁', label: '3D Rotation', domain: 'gv', angleDeg: 0, color: '#2563EB' },
+      { id: 'gv2', code: 'Gv₂', label: 'Spatial Memory', domain: 'gv', angleDeg: 45, color: '#3B82F6' },
+      { id: 'gq1', code: 'Gq₁', label: 'Sequence Induction', domain: 'gq', angleDeg: 90, color: '#059669' },
+      { id: 'gq2', code: 'Gq₂', label: 'Algorithmic Logic', domain: 'gq', angleDeg: 135, color: '#10B981' },
+      { id: 'gc1', code: 'Gc₁', label: 'Categorical Syllogisms', domain: 'gc', angleDeg: 180, color: '#7C3AED' },
+      { id: 'gc2', code: 'Gc₂', label: 'Relational Invariance', domain: 'gc', angleDeg: 225, color: '#8B5CF6' }
+    ];
+
+    // Calculate (x, y) on 420x420 canvas (center 210, 210, max R 150)
+    function getFacetCoords(facet, score) {
+      const cx = 210;
+      const cy = 210;
+      const maxR = 150;
+      const rad = (facet.angleDeg * Math.PI) / 180;
+      const r = (Math.max(20, Math.min(100, score)) / 100) * maxR;
+      return {
+        x: cx + r * Math.cos(rad),
+        y: cy + r * Math.sin(rad)
+      };
+    }
+
+    // Catmull-Rom Smooth Closed Spline Curve Generator
+    function getClosedSplinePath(points) {
+      const n = points.length;
+      if (n < 3) return '';
+      let d = `M ${points[0].x.toFixed(1)},${points[0].y.toFixed(1)}`;
+      for (let i = 0; i < n; i++) {
+        const p0 = points[(i - 1 + n) % n];
+        const p1 = points[i];
+        const p2 = points[(i + 1) % n];
+        const p3 = points[(i + 2) % n];
+
+        const cp1x = p1.x + (p2.x - p0.x) / 6;
+        const cp1y = p1.y + (p2.y - p0.y) / 6;
+        const cp2x = p2.x - (p3.x - p1.x) / 6;
+        const cp2y = p2.y - (p3.y - p1.y) / 6;
+
+        d += ` C ${cp1x.toFixed(1)},${cp1y.toFixed(1)} ${cp2x.toFixed(1)},${cp2y.toFixed(1)} ${p2.x.toFixed(1)},${p2.y.toFixed(1)}`;
+      }
+      d += ' Z';
+      return d;
+    }
+
+    // Render 8-Facet Biometric Spline and Highlighted Population Benchmark
+    function renderGrandTopology() {
+      const points = facetDefs.map(f => getFacetCoords(f, facetScores[f.id]));
+
+      // 1. Render Average Population Solid Gray Sphere (50% Baseline)
+      const popPoints = facetDefs.map(f => getFacetCoords(f, 50));
+      const popSplineD = getClosedSplinePath(popPoints);
+
+      const benchPath = document.getElementById('benchmark-overlay-path');
+      if (benchPath) {
+        benchPath.setAttribute('d', popSplineD);
+      }
+
+      // Render 8 Benchmark Pips on the Gray Sphere Rim
+      const pipsContainer = document.getElementById('benchmark-pips-container');
+      if (pipsContainer) {
+        pipsContainer.innerHTML = '';
+        popPoints.forEach((p) => {
+          const pip = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          pip.setAttribute('cx', p.x);
+          pip.setAttribute('cy', p.y);
+          pip.setAttribute('r', '3.5');
+          pip.setAttribute('fill', '#64748B');
+          pip.setAttribute('stroke', '#FFFFFF');
+          pip.setAttribute('stroke-width', '1');
+          pipsContainer.appendChild(pip);
+        });
+      }
+
+      // 2. Draw Participant 8-Facet Biometric Spline Shape (Orange Sphere)
+      const mainPath = document.getElementById('topology-main-path');
+      if (mainPath) {
+        mainPath.setAttribute('d', getClosedSplinePath(points));
+        mainPath.setAttribute('fill', 'url(#warmAmberRadarGradient)');
+        mainPath.setAttribute('stroke', '#D97706');
+        mainPath.setAttribute('stroke-width', '2.8');
+        mainPath.setAttribute('filter', 'url(#radarVertexGlow)');
+      }
+
+      // 3. Render 8 Clean Scientific Measurement Vertex Nodes
+      const handlesContainer = document.getElementById('handles-container');
+      if (handlesContainer) {
+        handlesContainer.innerHTML = '';
+        facetDefs.forEach((f, idx) => {
+          const p = points[idx];
+          const score = facetScores[f.id];
+
+          const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+          g.setAttribute('class', 'select-none');
+
+          // Subtle glowing halo
+          const halo = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          halo.setAttribute('cx', p.x);
+          halo.setAttribute('cy', p.y);
+          halo.setAttribute('r', '9');
+          halo.setAttribute('fill', f.color);
+          halo.setAttribute('opacity', '0.25');
+          g.appendChild(halo);
+
+          // Outer crisp ring
+          const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          ring.setAttribute('cx', p.x);
+          ring.setAttribute('cy', p.y);
+          ring.setAttribute('r', '6');
+          ring.setAttribute('fill', '#FFFFFF');
+          ring.setAttribute('stroke', f.color);
+          ring.setAttribute('stroke-width', '2.5');
+          g.appendChild(ring);
+
+          // Inner solid core pip
+          const core = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          core.setAttribute('cx', p.x);
+          core.setAttribute('cy', p.y);
+          core.setAttribute('r', '2.5');
+          core.setAttribute('fill', f.color);
+          g.appendChild(core);
+
+          // Node Text Badge (Facet Code + Score)
+          const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          const rad = (f.angleDeg * Math.PI) / 180;
+          const textR = 172;
+          const tx = 210 + textR * Math.cos(rad);
+          const ty = 210 + textR * Math.sin(rad) + 4;
+          text.setAttribute('x', tx);
+          text.setAttribute('y', ty);
+          text.setAttribute('text-anchor', 'middle');
+          text.setAttribute('font-family', 'monospace');
+          text.setAttribute('font-size', '9.5');
+          text.setAttribute('font-weight', 'bold');
+          text.setAttribute('fill', f.color);
+          text.textContent = `${f.code} ${score}%`;
+          g.appendChild(text);
+
+          handlesContainer.appendChild(g);
+        });
+      }
+
+      // 4. Update HUD Telemetry Statistics
+      updateTelemetryHUD(facetDefs);
+    }
+
+    // Telemetry Statistics Calculator (Volume, Balance, Phenotype)
+    function updateTelemetryHUD(facets) {
+      const scores = facets.map(f => facetScores[f.id]);
+      const n = scores.length;
+      if (n === 0) return;
+
+      // 1. Cognitive Volume %
+      const avgScore = scores.reduce((a, b) => a + b, 0) / n;
+      const vol = Math.pow(avgScore / 100, 2) * 100;
+      const volEl = document.getElementById('telemetry-volume');
+      if (volEl) volEl.textContent = `${vol.toFixed(1)}%`;
+
+      // 2. Isotropy / Balance Index
+      const variance = scores.reduce((sum, val) => sum + Math.pow(val - avgScore, 2), 0) / n;
+      const stdDev = Math.sqrt(variance);
+      const balance = Math.max(30, Math.min(100, Math.round(100 - (stdDev * 2.2))));
+      const balEl = document.getElementById('telemetry-balance');
+      if (balEl) {
+        balEl.textContent = `${balance}%`;
+        balEl.className = balance >= 85 ? 'text-sm sm:text-base font-bold text-emerald-600' : 'text-sm sm:text-base font-bold text-[var(--accent)]';
+      }
+
+      // 3. Phenotype Apex Identification
+      const domainAgg = {
+        Fluid: (facetScores.gf1 + facetScores.gf2) / 2,
+        Spatial: (facetScores.gv1 + facetScores.gv2) / 2,
+        Quant: (facetScores.gq1 + facetScores.gq2) / 2,
+        Deductive: (facetScores.gc1 + facetScores.gc2) / 2
+      };
+      const sortedDomains = Object.entries(domainAgg).sort((a, b) => b[1] - a[1]);
+      
+      let apexName = 'Integrated Polymath';
+      if (stdDev < 4) {
+        apexName = 'Harmonic Isotropic Mind';
+      } else if (sortedDomains[0][1] - sortedDomains[1][1] > 12) {
+        apexName = `Pure ${sortedDomains[0][0]} Specialist`;
+      } else {
+        apexName = `${sortedDomains[0][0]}-${sortedDomains[1][0]}`;
+      }
+      const apexEl = document.getElementById('telemetry-apex');
+      if (apexEl) apexEl.textContent = apexName;
+    }
+
+    // Default initialization
+    setTimeout(() => {
+      renderGrandTopology();
+    }, 100);
+
+
+    // Case Study Switcher for Visual Solutions Autopsy
+    function switchAutopsyCase(caseId) {
+      ['case-36', 'case-25', 'case-16'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+
+      ['tab-btn-36', 'tab-btn-25', 'tab-btn-16'].forEach(btnId => {
+        const btn = document.getElementById(btnId);
+        if (btn) {
+          btn.className = 'flex-1 py-1.5 rounded-lg font-bold text-center transition-all text-[var(--charcoal-muted)] hover:text-[var(--charcoal)]';
+        }
+      });
+
+      const activeEl = document.getElementById(caseId);
+      if (activeEl) activeEl.classList.remove('hidden');
+
+      const activeBtn = document.getElementById(`tab-btn-${caseId.replace('case-', '')}`);
+      if (activeBtn) {
+        activeBtn.className = 'flex-1 py-1.5 rounded-lg font-bold text-center transition-all bg-[var(--surface)] text-[var(--accent)] shadow-sm';
+      }
+    }
+
+    // Default initialization
+    setTimeout(() => {
+      renderGrandTopology();
+      inspectVector('gf1');
+    }, 100);
+
+    // Accordion Toggle
+    function toggleAccordion(id) {
+      const el = document.getElementById(id);
+      const icon = document.getElementById(`${id}-icon`);
+      if (el.classList.contains('hidden')) {
+        el.classList.remove('hidden');
+        icon.textContent = '▼';
+      } else {
+        el.classList.add('hidden');
+        icon.textContent = '▶';
+      }
+    }
+
+    // Flagging System & Mini-Map Population
+    const flaggedSet = new Set([14, 27]);
+
+    function toggleFlag(qNum) {
+      if (flaggedSet.has(qNum)) {
+        flaggedSet.delete(qNum);
+        document.getElementById(`flag-text-${qNum}`).textContent = 'Flag for Review';
+        document.getElementById(`btn-flag-${qNum}`).classList.remove('border-purple-500', 'text-purple-600', 'bg-purple-50');
+      } else {
+        flaggedSet.add(qNum);
+        document.getElementById(`flag-text-${qNum}`).textContent = 'Flagged';
+        document.getElementById(`btn-flag-${qNum}`).classList.add('border-purple-500', 'text-purple-600', 'bg-purple-50');
+      }
+      renderPills();
+    }
+
+    function renderPills() {
+      const container = document.getElementById('pill-grid');
+      container.innerHTML = '';
+
+      for (let i = 1; i <= 36; i++) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.onclick = () => alert(`Navigating directly to Question #${i}`);
+        
+        let style = 'h-7 rounded-lg text-[10px] font-mono font-bold flex items-center justify-center transition-all ';
+        if (i === 36) {
+          // Current
+          style += 'border-2 border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent)] ring-2 ring-[var(--accent-glow)]';
+        } else if (flaggedSet.has(i)) {
+          // Flagged
+          style += 'border border-purple-400 bg-purple-500 text-white';
+        } else if (i < 33) {
+          // Answered
+          style += 'border border-emerald-400 bg-emerald-500 text-white';
+        } else {
+          // Unanswered
+          style += 'border border-[var(--border)] bg-[var(--surface-subtle)] text-[var(--charcoal-muted)] hover:border-[var(--accent)]';
+        }
+
+        btn.className = style;
+        btn.textContent = i;
+        btn.title = `Question ${i} ${flaggedSet.has(i) ? '(Flagged)' : ''}`;
+        container.appendChild(btn);
+      }
+    }
+
+    // Live countdown timer simulation
+    let seconds = 24 * 60 + 18;
+    setInterval(() => {
+      if (seconds > 0) seconds--;
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      document.getElementById('demo-timer').textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }, 1000);
+
+    // Initial render
+    renderPills();
+  </script>
+</body>
+</html>
