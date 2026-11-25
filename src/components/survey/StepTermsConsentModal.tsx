@@ -60,16 +60,23 @@ function renderTermsContent(content: string): React.ReactNode {
 
     if (line.startsWith("# ")) {
       return (
-        <h4 key={idx} className="font-semibold text-charcoal-900 text-sm">
+        <h4 key={idx} className="font-bold text-charcoal-900 text-sm border-b border-border pb-1.5">
           {renderInlineBold(line.slice(2))}
         </h4>
       );
     }
     if (line.startsWith("## ")) {
       return (
-        <h5 key={idx} className="font-semibold text-charcoal-900 text-xs pt-1">
+        <h5 key={idx} className="font-bold text-charcoal-900 text-xs pt-2 uppercase tracking-wide">
           {renderInlineBold(line.slice(3))}
         </h5>
+      );
+    }
+    if (line.startsWith("### ")) {
+      return (
+        <h6 key={idx} className="font-semibold text-charcoal-900 text-xs pt-1">
+          {renderInlineBold(line.slice(4))}
+        </h6>
       );
     }
     if (line.startsWith("- ")) {
@@ -77,6 +84,13 @@ function renderTermsContent(content: string): React.ReactNode {
         <p key={idx} className="pl-3 flex items-start gap-1.5">
           <span className="text-primary font-bold">•</span>
           <span>{renderInlineBold(line.slice(2))}</span>
+        </p>
+      );
+    }
+    if (/^\d+\.\d+(\.\d+)?\s/.test(line) || /^\([a-z0-9]+\)\s/i.test(line)) {
+      return (
+        <p key={idx} className="pl-2.5 text-charcoal-700 leading-relaxed">
+          {renderInlineBold(line)}
         </p>
       );
     }
@@ -149,7 +163,7 @@ export function StepTermsConsentModal({
         </div>
 
         {/* Scrollable Terms & Conditions Box */}
-        <div className="rounded-lg border border-border bg-canvas p-4 max-h-56 overflow-y-auto text-xs text-charcoal-700 space-y-2.5 leading-relaxed font-sans shadow-inner">
+        <div className="rounded-lg border border-border bg-canvas p-4 max-h-80 sm:max-h-96 overflow-y-auto text-xs text-charcoal-700 space-y-2.5 leading-relaxed font-sans shadow-inner">
           {renderTermsContent(displayTerms)}
         </div>
 

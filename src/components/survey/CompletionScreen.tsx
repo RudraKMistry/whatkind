@@ -14,7 +14,6 @@ interface CompletionScreenProps {
 export function CompletionScreen({
   referenceId,
   consentedAt,
-  tcChecksum,
   campaignSlug,
 }: CompletionScreenProps) {
   const [copied, setCopied] = useState(false);
@@ -77,25 +76,11 @@ export function CompletionScreen({
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div>
-              <span className="block text-charcoal-500 font-mono">Saved Time (UTC):</span>
-              <span className="font-mono font-medium text-charcoal-900 break-all">
-                {new Date(consentedAt).toUTCString()}
-              </span>
-            </div>
-            <div>
-              <span className="block text-charcoal-500 font-mono">Quiz Link:</span>
-              <span className="font-mono font-medium text-charcoal-900">
-                /{campaignSlug}
-              </span>
-            </div>
-            <div className="sm:col-span-2">
-              <span className="block text-charcoal-500 font-mono">Privacy Rules Security Code (SHA-256):</span>
-              <span className="font-mono text-[11px] text-primary font-medium break-all">
-                {tcChecksum}
-              </span>
-            </div>
+          <div className="text-xs">
+            <span className="block text-charcoal-500 font-mono">Saved Time (UTC):</span>
+            <span className="font-mono font-medium text-charcoal-900 break-all">
+              {new Date(consentedAt).toUTCString()}
+            </span>
           </div>
         </div>
 

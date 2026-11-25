@@ -1518,13 +1518,13 @@ const DARK_TRIAD_SCHEMA: SurveySchemaDefinition = {
 };
 
 // ============================================================================
-// 5. HARRY POTTER CHARACTER MATCH (14 Book-Canon + 1 Non-Canon: Malfoid)
+// 5. HARRY POTTER CHARACTER MATCH
 // ============================================================================
 const HARRY_POTTER_SCHEMA: SurveySchemaDefinition = {
   version: "1.0.0",
   title: "Which Harry Potter Character Are You?",
   description:
-    "A 36-question character quiz mixing agree/disagree statements and Hogwarts-style choices to match you with 14 book-canon Harry Potter characters plus Malfoid (the non-canon female version of Draco Malfoy).",
+    "A 36-question character quiz mixing agree/disagree statements and Hogwarts-style choices to match you with classic Harry Potter book characters.",
   category: "character",
   testType: "harry_potter",
   estimatedMinutes: 6,
@@ -2255,29 +2255,6 @@ async function main() {
     },
   });
   console.log("✔ Provisioned campaign: /s/harry-potter-character");
-
-  // 7. Closed / Inactive Campaign
-  await prisma.campaign.upsert({
-    where: { slug: "closed-archive-2025" },
-    update: {
-      title: "2025 Past Survey (Closed)",
-      description: "This survey ended on December 31, 2025 and is no longer taking new answers.",
-      isActive: false,
-      tcVersion: "0.9.0",
-      tcContent: DEFAULT_TERMS_AND_CONDITIONS,
-      schemaJson: JSON.stringify(BIG_FIVE_SCHEMA),
-    },
-    create: {
-      slug: "closed-archive-2025",
-      title: "2025 Past Survey (Closed)",
-      description: "This survey ended on December 31, 2025 and is no longer taking new answers.",
-      isActive: false,
-      tcVersion: "0.9.0",
-      tcContent: DEFAULT_TERMS_AND_CONDITIONS,
-      schemaJson: JSON.stringify(BIG_FIVE_SCHEMA),
-    },
-  });
-  console.log("✔ Provisioned inactive campaign: /s/closed-archive-2025");
 
   console.log(">>> DATABASE SEEDING COMPLETED SUCCESSFULLY <<<");
 }

@@ -6,11 +6,13 @@ import { validateStepAnswers } from "@/lib/schema";
 import { calculatePsychometrics } from "@/lib/scoring";
 import { QuestionRenderer } from "./QuestionRenderer";
 import { ProgressBar } from "../ui/ProgressBar";
+import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { StepTermsConsentModal } from "./StepTermsConsentModal";
 import { CompletionScreen } from "./CompletionScreen";
 import { TraitReportScreen } from "./TraitReportScreen";
 import { ProfileForm } from "../profile/ProfileModal";
 import { UserProfile, isProfileComplete, loadStoredProfile } from "@/lib/profile";
+import { loadLatestResult, saveLatestResult } from "@/lib/latest-result";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, RotateCcw, ShieldCheck, User } from "lucide-react";
 
@@ -51,6 +53,7 @@ export function WizardContainer({
   const [submissionReceipt, setSubmissionReceipt] = useState<SubmissionReceipt | null>(null);
   const [psychometricResult, setPsychometricResult] = useState<PsychometricResult | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
 
   const storageKey = `survey_draft_${campaignSlug}`;
 
@@ -65,9 +68,24 @@ export function WizardContainer({
     return () => window.removeEventListener("survey-profile-updated", handleProfileUpdate);
   }, []);
 
-  // Restore draft from sessionStorage on mount
+  // Restore draft from sessionStorage (or open latest saved result if ?view=latest)
   useEffect(() => {
     try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("view") === "latest") {
+        const latest = loadLatestResult(campaignSlug);
+        if (latest) {
+          setPsychometricResult(latest.result);
+          setSubmissionReceipt({
+            referenceId: latest.referenceId,
+            consentedAt: latest.consentedAt,
+            tcChecksum: latest.tcChecksum,
+          });
+          setIsLoaded(true);
+          return;
+        }
+      }
+
       const saved = sessionStorage.getItem(storageKey);
       if (saved) {
         const parsed = JSON.parse(saved);
@@ -147,13 +165,21 @@ export function WizardContainer({
   };
 
   const handleResetDraft = () => {
-    if (window.confirm("Are you sure you want to clear your answers and start this quiz over?")) {
-      sessionStorage.removeItem(storageKey);
-      setAnswers({});
-      setErrors({});
-      setCurrentStepIndex(0);
-      setSubmissionReceipt(null);
+    setIsResetDialogOpen(true);
+  };
+
+  const confirmResetDraft = () => {
+    sessionStorage.removeItem(storageKey);
+    setAnswers({});
+    setErrors({});
+    setCurrentStepIndex(0);
+    setSubmissionReceipt(null);
+    setPsychometricResult(null);
+    setIsResetDialogOpen(false);
+    if (typeof window !== "undefined" && window.location.search.includes("view=latest")) {
+      window.history.replaceState({}, "", window.location.pathname);
     }
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleConfirmSubmit = async (consentData: {
@@ -198,8 +224,14 @@ export function WizardContainer({
         throw new Error(data.error || "Could not save your answers. Please check your internet connection and try again.");
       }
 
-      // Success: Clear draft and set receipt
+      // Success: Clear draft, cache latest result locally, and set receipt
       sessionStorage.removeItem(storageKey);
+      saveLatestResult(campaignSlug, {
+        result: calculatedPsychometrics,
+        referenceId: data.referenceId,
+        consentedAt: data.consentedAt,
+        tcChecksum: data.tcChecksum,
+      });
       setIsConsentModalOpen(false);
       setPsychometricResult(calculatedPsychometrics);
       setSubmissionReceipt({
@@ -231,15 +263,26 @@ export function WizardContainer({
   if (submissionReceipt) {
     if (psychometricResult) {
       return (
-        <TraitReportScreen
-          result={psychometricResult}
-          schema={schema}
-          campaignSlug={campaignSlug}
-          referenceId={submissionReceipt.referenceId}
-          consentedAt={submissionReceipt.consentedAt}
-          tcChecksum={submissionReceipt.tcChecksum}
-          onRetake={handleResetDraft}
-        />
+        <>
+          <TraitReportScreen
+            result={psychometricResult}
+            schema={schema}
+            campaignSlug={campaignSlug}
+            referenceId={submissionReceipt.referenceId}
+            consentedAt={submissionReceipt.consentedAt}
+            tcChecksum={submissionReceipt.tcChecksum}
+            onRetake={handleResetDraft}
+          />
+          <ConfirmDialog
+            isOpen={isResetDialogOpen}
+            title="Start this quiz over?"
+            description="Your current results view will be cleared so you can take the quiz fresh from question 1."
+            confirmLabel="Yes, Start Over"
+            cancelLabel="Keep My Results"
+            onConfirm={confirmResetDraft}
+            onCancel={() => setIsResetDialogOpen(false)}
+          />
+        </>
       );
     }
 
@@ -400,6 +443,17 @@ export function WizardContainer({
         tcVersion={tcVersion}
         tcContent={tcContent}
         tcChecksum={tcChecksum}
+      />
+
+      {/* Tactile Start-Over Confirmation Modal */}
+      <ConfirmDialog
+        isOpen={isResetDialogOpen}
+        title="Start this quiz over?"
+        description="All the answers you picked so far will be cleared and you will return to question 1."
+        confirmLabel="Yes, Start Over"
+        cancelLabel="Keep My Answers"
+        onConfirm={confirmResetDraft}
+        onCancel={() => setIsResetDialogOpen(false)}
       />
     </div>
   );

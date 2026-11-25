@@ -30,9 +30,11 @@ export function CampaignsListClient({
 }) {
   const [campaigns, setCampaigns] = useState<CampaignItem[]>(initialCampaigns);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [toggleError, setToggleError] = useState<string | null>(null);
 
   const handleToggle = async (id: string) => {
     setTogglingId(id);
+    setToggleError(null);
     try {
       const res = await fetch(`/api/admin/campaigns/${id}/toggle`, {
         method: "POST",
@@ -44,10 +46,10 @@ export function CampaignsListClient({
           prev.map((c) => (c.id === id ? { ...c, isActive: data.isActive } : c))
         );
       } else {
-        alert(data.error || "Could not change quiz status.");
+        setToggleError(data.error || "Could not change quiz status.");
       }
-    } catch (err) {
-      alert("Network error while updating quiz status.");
+    } catch {
+      setToggleError("Network error while updating quiz status.");
     } finally {
       setTogglingId(null);
     }
@@ -55,6 +57,21 @@ export function CampaignsListClient({
 
   return (
     <div className="space-y-6">
+      {toggleError && (
+        <div className="rounded-tactile border border-terracotta/30 bg-terracotta-soft px-4 py-3 text-xs text-terracotta flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 font-medium">
+            <AlertTriangle className="h-4 w-4 shrink-0" />
+            <span>{toggleError}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setToggleError(null)}
+            className="underline hover:no-underline font-semibold"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
       <div className="grid grid-cols-1 gap-5">
         {campaigns.map((camp) => (
           <div

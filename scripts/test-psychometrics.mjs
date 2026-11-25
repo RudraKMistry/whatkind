@@ -624,9 +624,17 @@ console.log("=== RUNNING ADVANCED PSYCHOMETRIC & COGNITIVE SCORING VERIFICATION 
     const malfoidDbRes = solveHpDbFor({ bravery: 68, wisdom: 86, ambition: 88, loyalty: 72, rebellion: 64, empathy_growth: 84 });
     assert.strictEqual(malfoidDbRes.characterMatch.topMatch.name, "Malfoid", "Malfoid must be reachable on live 36-item DB schema");
     assert.strictEqual(malfoidDbRes.characterMatch.topMatch.isCanon, false, "Malfoid must be marked non-canon");
+    assert(malfoidDbRes.detailedAnalysis.includes("Malfoid"), "Malfoid #1 result must reveal Malfoid");
+    assert(malfoidDbRes.detailedAnalysis.toLowerCase().includes("non-canon"), "Malfoid #1 result must reveal non-canon Easter egg");
+
     const dracoDbRes = solveHpDbFor({ bravery: 32, wisdom: 56, ambition: 90, loyalty: 54, rebellion: 36, empathy_growth: 34 });
     assert.strictEqual(dracoDbRes.characterMatch.topMatch.name, "Draco Malfoy", "Canon Draco Malfoy must be reachable on live 36-item DB schema");
     assert.strictEqual(dracoDbRes.characterMatch.topMatch.isCanon, true, "Draco Malfoy must be marked canon");
+    const dracoHasMalfoidTop3 = dracoDbRes.characterMatch.topMatches.some((m) => m.name === "Malfoid");
+    if (!dracoHasMalfoidTop3) {
+      assert(!dracoDbRes.detailedAnalysis.toLowerCase().includes("malfoid"), "Canon result without Malfoid in Top 3 must never mention Malfoid");
+      assert(!dracoDbRes.detailedAnalysis.toLowerCase().includes("non-canon"), "Canon result without Malfoid in Top 3 must never mention non-canon");
+    }
 
     console.log(`✔ Fast-forward instant results simulation passed for all 5 campaigns`);
   } finally {
@@ -717,6 +725,14 @@ console.log("=== RUNNING ADVANCED PSYCHOMETRIC & COGNITIVE SCORING VERIFICATION 
     const res = calculatePsychometrics(reachSchema, ans);
     assert.strictEqual(res.characterMatch.topMatch.name, target.name, `Expected ${target.name}, got ${res.characterMatch.topMatch.name}`);
     assert.strictEqual(res.characterMatch.topMatch.isCanon, target.isCanon, `${target.name} canon flag mismatch`);
+    const malfoidInTop3 = res.characterMatch.topMatches.some((m) => m.name === "Malfoid");
+    if (!malfoidInTop3) {
+      assert(!res.detailedAnalysis.toLowerCase().includes("malfoid"), `${target.name} without Malfoid in Top 3 must not mention Malfoid`);
+      assert(!res.detailedAnalysis.toLowerCase().includes("non-canon"), `${target.name} without Malfoid in Top 3 must not mention non-canon`);
+      assert(!res.archetypeSubtitle.toLowerCase().includes("non-canon"), `${target.name} subtitle must not mention non-canon`);
+    } else {
+      assert(res.detailedAnalysis.includes("Malfoid"), `${target.name} with Malfoid in Top 3 must reveal Malfoid`);
+    }
   }
 
   console.log("✔ All 15 Harry Potter characters (14 book-canon + Malfoid) verified reachable & distinct");

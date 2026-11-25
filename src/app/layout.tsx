@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Survey Portal | Personality, Thinking & Values Quizzes",
-  description: "Easy-to-read personality, thinking, and values quizzes with clear privacy consent.",
+  title: "WhatKind | Personality, Thinking & Values Quizzes",
+  description: "Easy-to-read personality, thinking, values, and character quizzes with clear privacy consent.",
 };
 
 export default function RootLayout({

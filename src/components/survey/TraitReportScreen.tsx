@@ -10,18 +10,13 @@ import { MoralCartesianGrid } from "./MoralCartesianGrid";
 import { DarkTriadDeltaChart } from "./DarkTriadDeltaChart";
 import { HarryPotterMatchChart } from "./HarryPotterMatchChart";
 import {
-  Award,
   Sparkles,
   Share2,
   RotateCcw,
   Compass,
-  ShieldCheck,
-  Copy,
   Check,
   Brain,
-  FileCheck,
   TrendingUp,
-  BarChart2,
 } from "lucide-react";
 
 interface TraitReportScreenProps {
@@ -38,20 +33,9 @@ export function TraitReportScreen({
   result,
   schema,
   campaignSlug,
-  referenceId,
-  consentedAt,
-  tcChecksum,
   onRetake,
 }: TraitReportScreenProps) {
-  const [copiedRef, setCopiedRef] = useState(false);
   const [copiedShare, setCopiedShare] = useState(false);
-  const [activeTab, setActiveTab] = useState<"traits" | "audit">("traits");
-
-  const handleCopyRef = () => {
-    navigator.clipboard.writeText(referenceId);
-    setCopiedRef(true);
-    setTimeout(() => setCopiedRef(false), 2000);
-  };
 
   const handleShare = () => {
     const text = `I just got my results for "${schema.title}"!\nMy Result Style: ${result.archetypeTitle}\nTake the test yourself at: ${window.location.origin}/s/${campaignSlug}`;
@@ -115,41 +99,10 @@ export function TraitReportScreen({
             </div>
           )}
         </div>
-
-        {/* Tab Switcher: Trait Breakdown vs Legal Audit */}
-        <div className="flex justify-center border-t border-border pt-4">
-          <div className="inline-flex p-1 rounded-xl bg-canvas-subtle border border-border text-xs font-medium">
-            <button
-              type="button"
-              onClick={() => setActiveTab("traits")}
-              className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg transition-all ${
-                activeTab === "traits"
-                  ? "bg-surface text-charcoal-900 shadow-warm-sm font-semibold"
-                  : "text-charcoal-500 hover:text-charcoal-900"
-              }`}
-            >
-              <BarChart2 className="h-3.5 w-3.5" />
-              Your Scores & Breakdown
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("audit")}
-              className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg transition-all ${
-                activeTab === "audit"
-                  ? "bg-surface text-charcoal-900 shadow-warm-sm font-semibold"
-                  : "text-charcoal-500 hover:text-charcoal-900"
-              }`}
-            >
-              <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-              Privacy & Consent Receipt
-            </button>
-          </div>
-        </div>
       </div>
 
-      {/* TAB 1: TRAIT BREAKDOWN */}
-      {activeTab === "traits" && (
-        <div className="space-y-6">
+      {/* TRAIT BREAKDOWN */}
+      <div className="space-y-6">
           {/* 1. COGNITIVE IQ ASSESSMENT: Gaussian Bell Curve + 8-Facet Biometric Spline Radar */}
           {(result.testType === "cognitive_iq" || result.iqScore !== undefined) && (
             <>
@@ -277,79 +230,6 @@ export function TraitReportScreen({
             </p>
           </div>
         </div>
-      )}
-
-      {/* TAB 2: AUDIT & CONSENT RECEIPT */}
-      {activeTab === "audit" && (
-        <div className="rounded-tactile border border-border bg-surface p-6 sm:p-8 shadow-warm-md space-y-6">
-          <div className="flex items-center gap-3 border-b border-border pb-4">
-            <div className="h-10 w-10 rounded-full bg-success-soft border border-success/30 flex items-center justify-center text-success shrink-0">
-              <FileCheck className="h-5 w-5" />
-            </div>
-            <div>
-              <h2 className="text-base font-semibold text-charcoal-900">
-                Saved Privacy & Consent Record
-              </h2>
-              <p className="text-xs text-charcoal-500">
-                Saved safely to our secure record before showing your results.
-              </p>
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-border bg-canvas-subtle p-5 space-y-4 shadow-inner text-xs">
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <div>
-                <span className="block text-[11px] font-mono uppercase text-charcoal-500 font-semibold tracking-wider">
-                  Your Receipt Code
-                </span>
-                <span className="font-mono text-base font-bold text-charcoal-900">
-                  {referenceId}
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={handleCopyRef}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-surface hover:bg-canvas text-xs font-medium text-charcoal-700 shadow-warm-sm transition-colors"
-              >
-                {copiedRef ? (
-                  <>
-                    <Check className="h-3.5 w-3.5 text-success" />
-                    <span className="text-success font-semibold">Copied</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-3.5 w-3.5" />
-                    <span>Copy Code</span>
-                  </>
-                )}
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <span className="block text-charcoal-500 font-mono">Time Agreed (UTC):</span>
-                <span className="font-mono font-medium text-charcoal-900 break-all">
-                  {new Date(consentedAt).toUTCString()}
-                </span>
-              </div>
-              <div>
-                <span className="block text-charcoal-500 font-mono">Test Page:</span>
-                <span className="font-mono font-medium text-charcoal-900">
-                  /s/{campaignSlug}
-                </span>
-              </div>
-              <div className="sm:col-span-2">
-                <span className="block text-charcoal-500 font-mono">
-                  Security Verification Code (SHA-256):
-                </span>
-                <span className="font-mono text-[11px] text-primary font-medium break-all">
-                  {tcChecksum}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Action Footer Bar */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">

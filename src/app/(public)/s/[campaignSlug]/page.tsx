@@ -133,9 +133,6 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
             <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
             Open Now
           </span>
-          <span className="bg-canvas-subtle border border-border px-2 py-0.5 rounded hidden sm:inline">
-            /{campaignSlug}
-          </span>
         </div>
       </header>
 

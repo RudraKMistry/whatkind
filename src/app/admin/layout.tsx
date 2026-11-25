@@ -26,6 +26,14 @@ export default function AdminLayout({
   // In Next App Router, route groups or page-level check works cleanly.
   // We can render children directly if on login, or enforce auth for protected admin pages.
 
+  if (!isAuth) {
+    return (
+      <div className="min-h-screen bg-canvas flex flex-col font-sans text-charcoal-900">
+        <main className="flex-1 w-full">{children}</main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-canvas flex flex-col font-sans text-charcoal-900">
       {/* Top Administrative Header */}

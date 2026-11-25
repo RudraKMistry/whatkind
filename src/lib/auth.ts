@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 export const ADMIN_COOKIE_NAME = "survey_admin_token";
 
 export function getAdminSecret(): string {
-  return process.env.ADMIN_SECRET || "dev-insecure-admin-key-change-in-prod";
+  return process.env.ADMIN_SECRET || "";
 }
 
 /**
@@ -13,6 +13,7 @@ export function getAdminSecret(): string {
  */
 export function isAuthenticatedAdmin(request?: NextRequest): boolean {
   const secret = getAdminSecret();
+  if (!secret) return false;
 
   if (request) {
     // 1. Check Bearer token / header

@@ -140,11 +140,13 @@ export function HarryPotterMatchChart({
   const houseBadgeClass =
     HOUSE_STYLES[topMatch.house] || "bg-stone-100 text-stone-800 border-stone-300";
 
+  const malfoidInTop3 = topMatches.some((m) => m.id === "malfoid" || !m.isCanon);
+
   return (
     <div
       className={`rounded-tactile border border-border bg-surface p-6 sm:p-8 shadow-warm-md space-y-6 ${className}`}
     >
-      {/* Header & House / Canon Badges */}
+      {/* Header & House / Secret Badges */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
         <div className="space-y-1.5">
           <div className="flex flex-wrap items-center gap-2">
@@ -157,15 +159,17 @@ export function HarryPotterMatchChart({
             >
               {topMatch.house}
             </span>
-            <span
-              className={`inline-flex items-center px-2.5 py-0.5 rounded-full border text-[11px] font-mono font-bold ${
-                topMatch.isCanon
-                  ? "bg-stone-100 text-stone-800 border-stone-300"
-                  : "bg-purple-100 text-purple-900 border-purple-300"
-              }`}
-            >
-              {topMatch.originLabel}
-            </span>
+            {malfoidInTop3 && (
+              <span
+                className={`inline-flex items-center px-2.5 py-0.5 rounded-full border text-[11px] font-mono font-bold ${
+                  topMatch.isCanon
+                    ? "bg-stone-100 text-stone-800 border-stone-300"
+                    : "bg-purple-100 text-purple-900 border-purple-300"
+                }`}
+              >
+                {topMatch.isCanon ? "Book Canon" : "Secret Character (Non-Canon)"}
+              </span>
+            )}
           </div>
           <h3 className="text-base font-bold text-charcoal-900">
             Your Scores vs. {topMatch.name} ({topMatch.similarity}% Match)
@@ -332,7 +336,7 @@ export function HarryPotterMatchChart({
             Top 3 Closest Matches
           </h4>
           <span className="text-[11px] font-mono text-charcoal-500">
-            14 Book Canon + 1 Non-Canon (Malfoid)
+            Based on your 6-trait profile
           </span>
         </div>
 
@@ -364,15 +368,17 @@ export function HarryPotterMatchChart({
                   >
                     {match.house}
                   </span>
-                  <span
-                    className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full border ${
-                      match.isCanon
-                        ? "bg-stone-100 text-stone-700 border-stone-300"
-                        : "bg-purple-100 text-purple-900 border-purple-300"
-                    }`}
-                  >
-                    {match.originLabel}
-                  </span>
+                  {malfoidInTop3 && (
+                    <span
+                      className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full border ${
+                        match.isCanon
+                          ? "bg-stone-100 text-stone-700 border-stone-300"
+                          : "bg-purple-100 text-purple-900 border-purple-300"
+                      }`}
+                    >
+                      {match.isCanon ? "Book Canon" : "Secret Character (Non-Canon)"}
+                    </span>
+                  )}
                 </div>
                 <div className="w-full h-1.5 rounded-full bg-canvas-subtle border border-border overflow-hidden">
                   <div

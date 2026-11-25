@@ -938,11 +938,21 @@ Across the four thinking skills, your strongest area was ${strongestSkill}, show
 
     const strongestUserTrait = [...traits].sort((a, b) => b.score - a.score)[0];
 
-    const canonNote = best.char.isCanon
-      ? `They are one of the 14 original book-canon characters in this quiz (only Malfoid is from the non-canon version).`
-      : `Malfoid is the one non-canon character in this quiz—a female version of Draco Malfoy who keeps Slytherin ambition and wit while adding sharper wisdom, empathy, and real growth. Every other character in this quiz comes from the original Harry Potter books.`;
+    const malfoidInTop3 = topMatches.some((m) => m.id === "malfoid" || !m.isCanon);
 
-    const detailedAnalysis = `Your closest Harry Potter match is ${best.char.name} (${best.similarity}% match • ${best.char.house} • ${best.char.originLabel}). ${canonNote}
+    const canonNote = !best.char.isCanon
+      ? ` Secret Easter Egg unlocked! Malfoid is a hidden non-canon character in this quiz—a female version of Draco Malfoy who keeps Slytherin ambition and wit while adding sharper wisdom, empathy, and real growth.`
+      : malfoidInTop3
+      ? ` Secret Easter Egg unlocked: Malfoid (a hidden non-canon female version of Draco Malfoy with sharper wisdom, empathy, and growth) also landed in your Top 3 matches!`
+      : "";
+
+    const originTag = !best.char.isCanon
+      ? " • Secret Character (Non-Canon)"
+      : malfoidInTop3
+      ? ` • ${best.char.originLabel}`
+      : "";
+
+    const detailedAnalysis = `Your closest Harry Potter match is ${best.char.name} (${best.similarity}% match • ${best.char.house}${originTag}).${canonNote}
 
 ${best.char.howYouMatch} Your strongest trait overall is ${strongestUserTrait.name} (${strongestUserTrait.score}%), and your scores lined up most closely with ${best.char.name} on ${closestTraits[0].name} (you: ${closestTraits[0].userScore}% vs. ${best.char.name}: ${closestTraits[0].charScore}%) and ${closestTraits[1].name} (you: ${closestTraits[1].userScore}% vs. ${best.char.name}: ${closestTraits[1].charScore}%).
 
@@ -951,7 +961,9 @@ ${best.char.watchOut} Your next closest matches were ${runnerUp1.name} (${runner
     return {
       testType,
       archetypeTitle: best.char.name,
-      archetypeSubtitle: `${best.char.house} • ${best.char.originLabel} — ${best.char.tagline}`,
+      archetypeSubtitle: !best.char.isCanon
+        ? `${best.char.house} • Secret Character (Non-Canon) — ${best.char.tagline}`
+        : `${best.char.house} — ${best.char.tagline}`,
       primaryMetricLabel: "Character Match",
       primaryMetricValue: `${best.similarity}%`,
       traits,
